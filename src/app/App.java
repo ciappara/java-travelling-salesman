@@ -9,8 +9,8 @@ public class App {
     // parameter values
     private static int surfaceWidth = 800;
     private static int surfaceHeight = 800;
-    private static int randomPointsQty = 100;
-    private static int maxIterations = 2000;
+    private static int randomPointsQty = 50;
+    private static int maxIterations = 1000;
 
     // global variables
     private static CityPoints cities;
@@ -23,7 +23,7 @@ public class App {
 
         // load or generate cities
         App.cities = new CityPoints(surfaceWidth, surfaceHeight, randomPointsQty);
-        App.cities.getCityPoints(""); //"test3tsp.txt");
+        App.cities.getCityPoints(""); //"test1tsp.txt");
         
         // visualise if in test mode
         if(isTest) {

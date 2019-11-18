@@ -1,8 +1,8 @@
 package app;
-import java.util.List;
+import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Collections;
 import app.models.*;
+import app.utils.Helper;
 
 // notes:
 // starting city will always be the first one
@@ -12,62 +12,75 @@ import app.models.*;
 
 public class TravelPathGenome implements Comparable<TravelPathGenome> {
     
-    public List<Integer> genome;   // cities' list in order in which they should be visited
-    double totalDistance;
-    int fitness;
+    private Integer[] orderChromosome; // cities' list in order in which they should be visited
+    private double totalDistance;
+    private int fitness;
 
-    // Generates a random travel path
-    public TravelPathGenome(ArrayList<City> cities) {
-        this.genome = randomSalesman(cities.size());
-        this.calculateFitness(cities);
+
+    // Generate random travel path
+    public TravelPathGenome(ArrayList<City> cityPoints) {
+        this.orderChromosome = this.shuffleCityOrder(cityPoints.size());
+        //this.resetStartingCity();
+        this.calculateFitness(cityPoints);
     }
 
-    // Generates a travel path with a user-defined genome
-    public TravelPathGenome(ArrayList<City> cities, List<Integer> permutationOfCities) {
-
-        // reset starting city
-        // if(permutationOfCities.indexOf(0) != 0) {
-        //     Collections.swap(permutationOfCities, permutationOfCities.indexOf(0), 0);
-        // }
-
-        this.genome = permutationOfCities;
-        this.calculateFitness(cities);
+    // Generate travel path with a user-defined chromosome
+    public TravelPathGenome(ArrayList<City> cityPoints, Integer[] chromosome) {
+        this.orderChromosome = chromosome;
+        //this.resetStartingCity();
+        this.calculateFitness(cityPoints);
     }
 
-    // Generates a random genome
-    // Genomes are permutations of the list of cities, except the starting city
-    // so we add them all to a list and shuffle
-    private List<Integer> randomSalesman(int numberOfCities) {
+    ////////////////
+    // PRIVATE
+    ////////////////
+
+    // PRV: Generate random chromosome using number of cities and shuffle
+    private Integer[] shuffleCityOrder(int numberOfCities) {
+        Integer[] chromosome = new Integer[numberOfCities];
+        return shuffleCityOrder(chromosome);
+    }
+
+    // PRV: Shuffle chromosom
+    private Integer[] shuffleCityOrder(Integer[] chromosome) {
         
-        List<Integer> result = new ArrayList<Integer>();
-
-        for (int i = 0; i < numberOfCities; i++) {
-            result.add(i);
+        if(chromosome.length != 0 && chromosome[0] == null) {
+    
+            for (int i = 0; i < chromosome.length; i++) {
+                chromosome[i] = i;
+            }
         }
 
-        Collections.shuffle(result);
-
-        // reset starting city
-        if(result.indexOf(0) != 0) {
-            Collections.swap(result, result.indexOf(0), 0);
+        for(int i = 0; i < chromosome.length; i++) {
+            int j = Helper.random().nextInt(chromosome.length);
+            if(i != j) {
+                Helper.swap(chromosome, i, j);
+            }
         }
-        
-        return result;
+
+        return chromosome;
+    }
+
+    // PRV: Reset starting city to initial city at element 0
+    private void resetStartingCity() {
+
+        if(orderChromosome[0] != 0) {
+            Helper.swap(orderChromosome, Arrays.asList(orderChromosome).indexOf(0), 0);
+        }
     }
 
 
-    // calculates distance between two points
-    public void calculateFitness(ArrayList<City> cities) {
+    // PRV: Calculate distance between two points
+    private void calculateFitness(ArrayList<City> cities) {
         int numberOfCities = cities.size();
         double totalDistance = 0.0;
 
         for(int i = 0; i < numberOfCities - 1; i++) {
 
             // get the cities according to the genome sorting
-            City thisCity = cities.get(genome.get(i));
-            City nextCity = cities.get(genome.get(i + 1));
+            City thisCity = cities.get(orderChromosome[i]);
+            City nextCity = cities.get(orderChromosome[i + 1]);
             totalDistance += thisCity.calculateDistance(nextCity);
-
         }
 
         // returns total distance for whole genome
@@ -75,26 +88,33 @@ public class TravelPathGenome implements Comparable<TravelPathGenome> {
         this.fitness = (int) this.totalDistance;
     }
 
-    public List<Integer> getGenome() {
-        return genome;
+    ////////////////
+    // PROPERTIES
+    ////////////////
+
+    public Integer[] getOrderChromosome() {
+        return orderChromosome;
     }
 
     public int getStartingCity() {
-        return genome.get(0);
+        return orderChromosome[0];
     }
 
     public int getFitness() {
         return this.fitness;
     }
 
-    
+    ////////////////
+    // OVERRIDES
+    ////////////////
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Path: ");
 
         // todo: is gene int the same as the city id?
-        for (int gene : genome) {
+        for (int gene : orderChromosome) {
             sb.append(" ");
             sb.append(gene);
         }
@@ -105,12 +125,12 @@ public class TravelPathGenome implements Comparable<TravelPathGenome> {
     }
 
     @Override
-    public int compareTo(TravelPathGenome genome) {
+    public int compareTo(TravelPathGenome chromosome) {
 
-        if(this.fitness > genome.getFitness()) {
+        if(this.fitness > chromosome.getFitness()) {
             return 1;
         }
-        else if(this.fitness < genome.getFitness()) {
+        else if(this.fitness < chromosome.getFitness()) {
             return -1;
         }
         else {

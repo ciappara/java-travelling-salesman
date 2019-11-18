@@ -22,12 +22,38 @@ public class Helper {
     }
     
     ////////////////////////////////
-    // swaps two values in an array
+    // swaps city values in array
     ////////////////////////////////
     public static void swap(ArrayList<City> list, int i, int j) {
         City temp = list.get(i);
         list.set(i, list.get(j));
         list.set(j, temp);
+    }
+
+    ////////////////////////////////
+    // swaps int values in array
+    ////////////////////////////////
+    public static void swap(Integer[] list, int i, int j) {
+        int temp = list[i];
+        list[i] = list[j];
+        list[j] = temp;
+    }
+
+    public static int indexOf(Integer[] list, int value) {
+        for(int i = 0; i < list.length; i++){
+            if(list[i] == value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static Integer[] clone(Integer[] list) {
+        Integer[] cloned = new Integer[list.length];
+        for(int i = 0; i < list.length; i++){
+            cloned[i] = list[i];
+        }
+        return cloned;
     }
 
     ////////////////////////////////

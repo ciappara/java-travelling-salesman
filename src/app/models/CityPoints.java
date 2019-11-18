@@ -101,7 +101,7 @@ public class CityPoints {
         
         ArrayList<City> citiesPath = new ArrayList<City>();
 
-        for(int gene : chromosome.genome) {
+        for(int gene : chromosome.getOrderChromosome()) {
             City city = points.get(gene);
             citiesPath.add(new City(city.x, city.y, city.id));
         }

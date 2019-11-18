@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import app.*;
+import app.core.Crossover;
+import app.core.Mutation;
 import app.models.*;
 import app.utils.Helper;
 import app.utils.Surface;
@@ -15,18 +17,16 @@ public class GeneticAlgorithm {
     int crossoverRate;  // reproduction size
     int maxIterations;
     float mutationRate;
-    ArrayList<City> cities2;
     
     int tournamentSize;
     CityPoints cities;
-    //int targetFitness;
 
     public GeneticAlgorithm(CityPoints cities, int maxIterations) { //int targetFitness
         this.cities = cities;
-        this.populationSize = 1000;
-        this.crossoverRate = 100;
+        this.populationSize = 800;
+        this.crossoverRate = 90;
         this.maxIterations = maxIterations; //1000;
-        this.mutationRate = 0.5f;
+        this.mutationRate = 0.4f;
         this.tournamentSize = 40;
 
         if(populationSize < tournamentSize) {
@@ -34,7 +34,7 @@ public class GeneticAlgorithm {
         }
     }
 
-        ////////////////////////////////
+    ////////////////////////////////
     // optimise and find result
     ////////////////////////////////
     public TravelPathGenome optimize(Surface surface) {
@@ -74,16 +74,17 @@ public class GeneticAlgorithm {
     }
 
 
-    ////////////////////////////////
-    // create initial generation
-    ////////////////////////////////
+    // Create initial generation/population
     public List<TravelPathGenome> initialPopulation() {
         List<TravelPathGenome> population = new ArrayList<>();
         HashSet<TravelPathGenome> hashSet = new HashSet<>();
 
         while (population.size() < populationSize) {
+
+            // create new shuffled cities order
             TravelPathGenome chromo = new TravelPathGenome(cities.points);
             if (!hashSet.contains(chromo)) {
+
                 hashSet.add(chromo);
                 population.add(chromo);
             }
@@ -92,54 +93,29 @@ public class GeneticAlgorithm {
         return population;
     }
 
-
-    ////////////////////////////////
-    // create new population
-    ////////////////////////////////
+    // Create new population
     public List<TravelPathGenome> createPopulation(List<TravelPathGenome> selectedPopulation){
 
+        HashSet<Integer[]> hashSet = new HashSet<>();
         List<TravelPathGenome> newPopulation = new ArrayList<>();
-        HashSet<TravelPathGenome> hashSet = new HashSet<>();
 
         while(newPopulation.size() < populationSize){
 
-            // pick 2 random parents
-            // List<TravelPathGenome> parents = new ArrayList<>();
-            // int a = (int) Math.floor(Helper.random().nextInt(population.size()));
-            // int b = (int) Math.floor(Helper.random().nextInt(population.size()));
+            // get random parents
+            Integer[] parent1Chromosome = selectedPopulation.get(Helper.random().nextInt(selectedPopulation.size())).getOrderChromosome();
+            Integer[] parent2Chromosome = selectedPopulation.get(Helper.random().nextInt(selectedPopulation.size())).getOrderChromosome();
             
-            // parents.add(population.get(a));
-            // parents.add(population.get(b));
+            // cross and mutate children
+            Integer[][] children = Crossover.twoPointCross(parent1Chromosome, parent2Chromosome);
+            children[0] = Mutation.mutate(children[0], mutationRate);
+            children[1] = Mutation.mutate(children[1], mutationRate);
 
-            List<TravelPathGenome> parents = new ArrayList<>(); // = pickNRandomElements(population, 2);
-            //List<TravelPathGenome> parents;
-            while(parents.size() < 2) {
-                int randNo =  Helper.random().nextInt(selectedPopulation.size());
-                TravelPathGenome parent = selectedPopulation.get(randNo);
-                parents.add(parent);
-                
-                //population.remove(randNo);
-                //if (!hashSet.contains(parent)) {
-                //    hashSet.add(parent);
-                //}
-            }
-            // parents.add(population.get(Helper.random().nextInt(population.size())));
-            // parents.add(population.get(Helper.random().nextInt(population.size())));
-
-            // create children from parents
-            List<TravelPathGenome> children = crossover(parents);
-
-            // mutate children
-            children.set(0, mutate(children.get(0)));
-            children.set(1, mutate(children.get(1)));
-
-            // add children to new population
-            //newPopulation.addAll(children);
-
-            for(TravelPathGenome child : children) {
+            // add non-existent children to new population
+            for(Integer[] child : children) {
                 if (!hashSet.contains(child)) {
+
                     hashSet.add(child);
-                    newPopulation.add(child);
+                    newPopulation.add(new TravelPathGenome(cities.points, child));
                 }
             }
         }
@@ -148,23 +124,23 @@ public class GeneticAlgorithm {
     }
 
 
-    ////////////////////////////////
-    // mutate selected genome
-    ////////////////////////////////
-    public TravelPathGenome mutate(TravelPathGenome travelpath) {
+    // ////////////////////////////////
+    // // mutate selected genome
+    // ////////////////////////////////
+    // public TravelPathGenome mutate(TravelPathGenome travelpath) {
 
-        float mutate = Helper.random().nextFloat();
+    //     float mutate = Helper.random().nextFloat();
 
-        if(mutate < mutationRate) {
-            List<Integer> genome = travelpath.getGenome();
-            Collections.swap(genome, Helper.random().nextInt(genome.size()), Helper.random().nextInt(genome.size()));
+    //     if(mutate < mutationRate) {
+    //         List<Integer> genome = travelpath.getGenome();
+    //         Collections.swap(genome, Helper.random().nextInt(genome.size()), Helper.random().nextInt(genome.size()));
 
-            return new TravelPathGenome(cities.points, genome);
-        }
+    //         return new TravelPathGenome(cities.points, genome);
+    //     }
 
-        // return same travel path if not mutated
-        return travelpath;
-    }
+    //     // return same travel path if not mutated
+    //     return travelpath;
+    // }
     
 
     ////////////////////////////////
@@ -181,63 +157,213 @@ public class GeneticAlgorithm {
     }
     
 
-    ////////////////////////////////
-    // crossover between two parents
-    ////////////////////////////////
-    public List<TravelPathGenome> crossover(List<TravelPathGenome> parents){
-
-        // the midpoint (should always skip the first genome which is the starting city)
-        int breakpoint = Helper.random().nextInt(parents.get(0).genome.size() - 1) + 1;
-        //System.out.println(breakpoint);
-
-        // the new generation
-        List<TravelPathGenome> children = new ArrayList<>();
-
-        // copy parental genomes instead of modifying in case they were
-        // chosen to participate in crossover multiple times
-        List<Integer> parent1Genome = new ArrayList<>(parents.get(0).getGenome());
-        List<Integer> parent2Genome = new ArrayList<>(parents.get(1).getGenome());
-
-        // creating child 1
-        children.add(createChild(0, breakpoint, parent1Genome, parent2Genome));
-        
-        // reset edited parent1 genome for the next child
-        parent1Genome = parents.get(0).getGenome();
-
-        // creating child 2
-        children.add(createChild(breakpoint, parents.size(), parent2Genome, parent1Genome));
-
-        // for(int i = 0; i<breakpoint; i++){
-        //     int newVal = parent2Genome.get(i);
-        //     Collections.swap(parent1Genome,parent1Genome.indexOf(newVal),i);
-        // }
-        // children.add(new SalesmanGenome(parent1Genome,numberOfCities,travelPrices,startingCity));
-        // parent1Genome = parents.get(0).getGenome(); // reseting the edited parent
-
-        // // creating child 2
-        // for(int i = breakpoint; i<genomeSize; i++){
-        //     int newVal = parent1Genome.get(i);
-        //     Collections.swap(parent2Genome,parent2Genome.indexOf(newVal),i);
-        // }
-        // children.add(new SalesmanGenome(parent2Genome,numberOfCities,travelPrices,startingCity));
-
-        return children;
-    }
 
 
-    ////////////////////////////////
-    // create crossover child
-    ////////////////////////////////
-    private TravelPathGenome createChild(int startPoint, int endPoint, List<Integer> parent1genome, List<Integer> parent2genome) {
 
-        // create new child
-        for(int i = startPoint; i < endPoint; i++){
-            int newValue = parent2genome.get(i);
-            Collections.swap(parent1genome, parent1genome.indexOf(newValue), i);
-        }
 
-        return new TravelPathGenome(this.cities.points, parent1genome);
-    }
+
+    // /**
+    //  * Performs a crossover on all the cities between two points.
+    //  * @param p1    the first parent chromosome
+    //  * @param p2    the second parent chromosome
+    //  * @param r     the Random object for selecting a point
+    //  * @return      the children
+    //  */
+    // public ArrayList<TravelPathGenome> orderCrossover (TravelPathGenome p1, TravelPathGenome p2) {
+    //     Integer[] parent1 = p1.getOrderChromosome();
+    //     Integer[] parent2 = p2.getOrderChromosome();
+
+    //     // City[] parent1 = p1.getArray();
+    //     // City[] parent2 = p2.getArray();
+
+    //     Integer[] child1 = new Integer[parent1.length];
+    //     Integer[] child2 = new Integer[parent2.length];
+
+    //     HashSet<Integer> citiesInChild1 = new HashSet<>();
+    //     HashSet<Integer> citiesInChild2 = new HashSet<>();
+
+    //     ArrayList<Integer> citiesNotInChild1 = new ArrayList<>();
+    //     ArrayList<Integer> citiesNotInChild2 = new ArrayList<>();
+
+    //     ArrayList<TravelPathGenome> children = new ArrayList<>();
+    //     int totalCities = parent1.length;
+
+    //     // first and second point crossover
+    //     int firstPoint = Helper.random().nextInt(totalCities);
+    //     int secondPoint = Helper.random().nextInt(totalCities - firstPoint) + firstPoint;
+
+    //     // Inherit the cities before and after the points selected.
+    //     for (int i = 0; i < firstPoint; i++) {
+    //         child1[i] = parent1[i];
+    //         child2[i] = parent2[i];
+    //         citiesInChild1.add(parent1[i]);
+    //         citiesInChild2.add(parent2[i]);
+    //     }
+    //     for (int i = secondPoint; i < totalCities; i++) {
+    //         child1[i] = parent1[i];
+    //         child2[i] = parent2[i];
+    //         citiesInChild1.add(parent1[i]);
+    //         citiesInChild2.add(parent2[i]);
+    //     }
+
+    //     // Get the cities of the opposite parent if the child does not already contain them.
+    //     for (int i = firstPoint; i < secondPoint; i++) {
+    //         if (!citiesInChild1.contains(parent2.get(i))) {
+    //             citiesInChild1.add(parent2.get(i));
+    //             child1[i] = parent2.get(i);
+    //         }
+    //         if (!citiesInChild2.contains(parent1.get(i))) {
+    //             citiesInChild2.add(parent1.get(i));
+    //             child2[i] = parent1.get(i);
+    //         }
+    //     }
+
+    //     // Find all the cities that are still missing from each child.
+    //     for (int i = 0; i < totalCities; i++) {
+    //         if (!citiesInChild1.contains(parent2.get(i))) {
+    //             citiesNotInChild1.add(parent2.get(i));
+    //         }
+    //         if (!citiesInChild2.contains(parent1.get(i))) {
+    //             citiesNotInChild2.add(parent1.get(i));
+    //         }
+    //     }
+
+    //     // Find which spots are still empty in each child.
+    //     ArrayList<Integer> emptySpotsC1 = new ArrayList<>();
+    //     ArrayList<Integer> emptySpotsC2 = new ArrayList<>();
+    //     for (int i = 0; i < totalCities; i++) {
+    //         if (child1[i] == null) {
+    //             emptySpotsC1.add(i);
+    //         }
+    //         if (child2[i] == null) {
+    //             emptySpotsC2.add(i);
+    //         }
+    //     }
+
+    //     // Fill in the empty spots.
+    //     for (Integer city : citiesNotInChild1) {
+    //         child1[emptySpotsC1.remove(0)] = city;
+    //     }
+    //     for (Integer city : citiesNotInChild2) {
+    //         child2[emptySpotsC2.remove(0)] = city;
+    //     }
+
+    //     TravelPathGenome childOne = new TravelPathGenome(cities.points, child1);
+    //     TravelPathGenome childTwo = new TravelPathGenome(cities.points, child2);
+    //     children.add(childOne);
+    //     children.add(childTwo);
+
+    //     return children;
+    // }
+
+
+
+
+
+
+
+    //     /**
+    //  * Performs a crossover on all the cities between two points.
+    //  * @param p1    the first parent chromosome
+    //  * @param p2    the second parent chromosome
+    //  * @param r     the Random object for selecting a point
+    //  * @return      the children
+    //  */
+    // public ArrayList<TravelPathGenome> orderCrossover (TravelPathGenome p1, TravelPathGenome p2, Random r) {
+    //     ArrayList<City> parent1 = cities.getPathFromChromosome(p1);
+    //     ArrayList<City> parent2 = cities.getPathFromChromosome(p2);
+
+    //     // City[] parent1 = p1.getArray();
+    //     // City[] parent2 = p2.getArray();
+
+    //     City[] child1 = new City[parent1.size()];
+    //     City[] child2 = new City[parent2.size()];
+
+    //     HashSet<City> citiesInChild1 = new HashSet<>();
+    //     HashSet<City> citiesInChild2 = new HashSet<>();
+
+    //     ArrayList<City> citiesNotInChild1 = new ArrayList<>();
+    //     ArrayList<City> citiesNotInChild2 = new ArrayList<>();
+
+    //     ArrayList<TravelPathGenome> children = new ArrayList<>();
+    //     int totalCities = parent1.size();
+
+    //     int firstPoint = r.nextInt(totalCities);
+    //     int secondPoint = r.nextInt(totalCities - firstPoint) + firstPoint;
+
+    //     // Inherit the cities before and after the points selected.
+    //     for (int i = 0; i < firstPoint; i++) {
+    //         child1[i] = parent1.get(i);
+    //         child2[i] = parent2.get(i);
+    //         citiesInChild1.add(parent1.get(i));
+    //         citiesInChild2.add(parent2.get(i));
+    //     }
+    //     for (int i = secondPoint; i < totalCities; i++) {
+    //         child1[i] = parent1.get(i);
+    //         child2[i] = parent2.get(i);
+    //         citiesInChild1.add(parent1.get(i));
+    //         citiesInChild2.add(parent2.get(i));
+    //     }
+
+    //     // Get the cities of the opposite parent if the child does not already contain them.
+    //     for (int i = firstPoint; i < secondPoint; i++) {
+    //         if (!citiesInChild1.contains(parent2.get(i))) {
+    //             citiesInChild1.add(parent2.get(i));
+    //             child1[i] = parent2.get(i);
+    //         }
+    //         if (!citiesInChild2.contains(parent1.get(i))) {
+    //             citiesInChild2.add(parent1.get(i));
+    //             child2[i] = parent1.get(i);
+    //         }
+    //     }
+
+    //     // Find all the cities that are still missing from each child.
+    //     for (int i = 0; i < totalCities; i++) {
+    //         if (!citiesInChild1.contains(parent2.get(i))) {
+    //             citiesNotInChild1.add(parent2.get(i));
+    //         }
+    //         if (!citiesInChild2.contains(parent1.get(i))) {
+    //             citiesNotInChild2.add(parent1.get(i));
+    //         }
+    //     }
+
+    //     // Find which spots are still empty in each child.
+    //     ArrayList<Integer> emptySpotsC1 = new ArrayList<>();
+    //     ArrayList<Integer> emptySpotsC2 = new ArrayList<>();
+    //     for (int i = 0; i < totalCities; i++) {
+    //         if (child1[i] == null) {
+    //             emptySpotsC1.add(i);
+    //         }
+    //         if (child2[i] == null) {
+    //             emptySpotsC2.add(i);
+    //         }
+    //     }
+
+    //     // Fill in the empty spots.
+    //     for (City city : citiesNotInChild1) {
+    //         child1[emptySpotsC1.remove(0)] = city;
+    //     }
+    //     for (City city : citiesNotInChild2) {
+    //         child2[emptySpotsC2.remove(0)] = city;
+    //     }
+
+    //     TravelPathGenome childOne = new TravelPathGenome(child1);
+    //     TravelPathGenome childTwo = new TravelPathGenome(child2);
+    //     children.add(childOne);
+    //     children.add(childTwo);
+
+    //     return children;
+    // }
+
+
+
+
+
+
+
+
+
+
 
 
     // public void naturalSelection() {
@@ -268,6 +394,84 @@ public class GeneticAlgorithm {
     //     }
     // }
 
+
+        /**
+     * Picks k Chromosomes at at random and then return the best one.
+     * There is a small chance that the best one will not be selected.
+     * @param population    the population to selected from
+     * @param k             the number of chromosomes to select
+     * @param random        the Random object for randomly selecting
+     * @return              usually the fittest Chromosome from k randomly selected chromosomes
+     */
+    // static TravelPathGenome tournamentSelection (Population population, int k) {
+    //     if (k < 1) {
+    //         throw new IllegalArgumentException("K must be greater than 0.");
+    //     }
+
+    //     TravelPathGenome[] populationAsArray = population.getChromosomes();
+    //     ArrayList<TravelPathGenome> kChromosomes = getKChromosomes(populationAsArray, k);
+    //     return getChromosome(kChromosomes);
+    // }
+
+    /**
+     * Returns k randomly selected Chromosomes.
+     * @param pop       an array of Chromosomes (a population)
+     * @param k         the number of Chromosomes to randomly select
+     * @param random    the Random object used for picking a random chromosomes
+     * @return          k randomly selected chromosomes
+     */
+    private static ArrayList<TravelPathGenome> getKChromosomes (TravelPathGenome[] pop, int k) {
+
+        ArrayList<TravelPathGenome> kChromosomes = new ArrayList<>();
+
+        for (int j = 0; j < k; j++) {
+            TravelPathGenome chromosome = pop[Helper.random().nextInt(pop.length)];
+            kChromosomes.add(chromosome);
+        }
+
+        return kChromosomes;
+    }
+
+    /**
+     * Get the best Chromosome in a list of Chromosomes. There is a small chance
+     * that a randomly selected Chromosome is picked instead of the best one.
+     * @param arrayList     the list of Chromosomes
+     * @param random        the Random object used for selecting a random Chromosome if needed
+     * @return              usually the best Chromosome
+     */
+    private static TravelPathGenome getChromosome (ArrayList<TravelPathGenome> arrayList) {
+
+        TravelPathGenome bestChromosome = getBestChromosome(arrayList);
+        int ODDS_OF_NOT_PICKING_FITTEST = 5;
+
+        // 1 in 5 chance to return a chromosome that is not the best.
+        if (Helper.random().nextInt(ODDS_OF_NOT_PICKING_FITTEST) == 0 && arrayList.size() != 1) {
+            arrayList.remove(bestChromosome);
+            return arrayList.get(Helper.random().nextInt(arrayList.size()));
+        }
+
+        return bestChromosome;
+    }
+
+    /**
+     * Get the best Chromosome in a list of Chromosomes.
+     * @param arrayList     the list to search
+     * @return              the best chromosome
+     */
+    private static TravelPathGenome getBestChromosome (ArrayList<TravelPathGenome> arrayList) {
+
+        TravelPathGenome bestC = null;
+
+        for (TravelPathGenome c : arrayList) {
+            if (bestC == null) {
+                bestC = c;
+            } else if (c.getFitness() < bestC.getFitness()) {
+                bestC = c;
+            }
+        }
+
+        return bestC;
+    }
 
 
 
