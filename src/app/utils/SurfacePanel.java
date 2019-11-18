@@ -82,13 +82,16 @@ public class SurfacePanel extends JPanel{
 
             // draw city point
             if(drawCityPoint) {
+                g2.fillOval(currentX - cityPointLocation, currentY - cityPointLocation, cityPointSize, cityPointSize);
+            }
+            else {
                 if(i == 0) {
-                    g2.setColor(Color.GREEN);   
+                    g2.setColor(Color.GREEN);
+                    g2.fillOval(currentX - cityPointLocation, currentY - cityPointLocation, cityPointSize, cityPointSize);   
                 }
-                else {
+                else {                    
                     g2.setColor(color);
                 }
-                g2.fillOval(currentX - cityPointLocation, currentY - cityPointLocation, cityPointSize, cityPointSize);
             }
 
             // draw line

@@ -9,7 +9,7 @@ public class App {
     // parameter values
     private static int surfaceWidth = 800;
     private static int surfaceHeight = 800;
-    private static int randomPointsQty = 50;
+    private static int randomPointsQty = 100;
     private static int maxIterations = 2000;
 
     // global variables

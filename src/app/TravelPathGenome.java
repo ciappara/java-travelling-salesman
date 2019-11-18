@@ -26,9 +26,9 @@ public class TravelPathGenome implements Comparable<TravelPathGenome> {
     public TravelPathGenome(ArrayList<City> cities, List<Integer> permutationOfCities) {
 
         // reset starting city
-        if(permutationOfCities.indexOf(0) != 0) {
-            Collections.swap(permutationOfCities, permutationOfCities.indexOf(0), 0);
-        }
+        // if(permutationOfCities.indexOf(0) != 0) {
+        //     Collections.swap(permutationOfCities, permutationOfCities.indexOf(0), 0);
+        // }
 
         this.genome = permutationOfCities;
         this.calculateFitness(cities);
