@@ -9,7 +9,10 @@ public class CityPoints {
     private int minY = 0;
     private int maxX = 0;
     private int maxY = 0;
+
     private ArrayList<City> points;
+    private ArrayList<City> bestEver;
+
     private int surfaceWidth;
     private int surfaceHeight;
 
@@ -17,8 +20,6 @@ public class CityPoints {
         surfaceWidth = 800;
         surfaceHeight = 600;
     }
-
-    public 
 
     ///////////////////////////////////////
     // imports city points from test files
@@ -49,7 +50,7 @@ public class CityPoints {
     public void generateCityPoints(int citiesQty) {
 
         // reset cities array
-        cities = new ArrayList<>();
+        points = new ArrayList<>();
 
         for(int i = 0; i < citiesQty; i++) {
             int x = Helper.random().nextInt(surfaceWidth);

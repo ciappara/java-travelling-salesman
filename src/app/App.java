@@ -13,6 +13,8 @@ public class App {
     static ArrayList<City> bestEverPath;
     static double bestEverDistance = -1.0;
 
+    private static CityPoints points;
+
     private static boolean isTest = true;
     private static SurfacePanel panel;
     
@@ -156,13 +158,6 @@ public class App {
                 panel.update(cities, bestEverPath);
                 SwingUtilities.updateComponentTreeUI(panel);
             }
-        }
-    }
-
-    // creates random points for the amount of cities set
-    public static void createRandomCityPoints(int citiesQty) {
-        for(int i = 0; i < citiesQty; i++) {
-            cities.add(new City(Helper.random().nextInt(surfaceWidth), Helper.random().nextInt(surfaceHeight), i));
         }
     }
 
