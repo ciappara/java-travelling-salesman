@@ -37,6 +37,14 @@ public class Helper {
     public static float remap (float value, float from1, float to1, float from2, float to2) {
         return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
+    
+    ////////////////////////////////
+    // remaps value to an equivalent
+    // from-to range
+    ////////////////////////////////
+    public static int remap (int value, int from1, int to1, int from2, int to2) {
+        return (int) remap((float) value, (float) from1, (float) to1, (float) from2, (float) to2);
+    }
 
     ////////////////////////////////
     // gets 'files' directory path

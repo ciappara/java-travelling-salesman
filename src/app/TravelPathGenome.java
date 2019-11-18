@@ -12,7 +12,7 @@ import app.models.*;
 
 public class TravelPathGenome implements Comparable<TravelPathGenome> {
     
-    List<Integer> genome;   // cities' list in order in which they should be visited
+    public List<Integer> genome;   // cities' list in order in which they should be visited
     double totalDistance;
     int fitness;
 

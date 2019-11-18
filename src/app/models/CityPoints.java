@@ -1,13 +1,14 @@
 package app.models;
 import java.util.*;
 import app.Helper;
+import app.TravelPathGenome;
 
 public class CityPoints {
 
-    private int minX = 0;
-    private int minY = 0;
-    private int maxX = 0;
-    private int maxY = 0;
+    public int minX = 0;
+    public int minY = 0;
+    public int maxX = 0;
+    public int maxY = 0;
 
     public ArrayList<City> points;
     public ArrayList<City> bestEver;
@@ -91,5 +92,20 @@ public class CityPoints {
         // add new city
         points.add(new City(x, y, id));
     }
-    
+
+    ///////////////////////////////////////
+    // order cities according to the path
+    // in the chromosome
+    ///////////////////////////////////////
+    public ArrayList<City> getPathFromChromosome(TravelPathGenome chromosome) {
+        
+        ArrayList<City> citiesPath = new ArrayList<City>();
+
+        for(int gene : chromosome.genome) {
+            City city = points.get(gene);
+            citiesPath.add(new City(city.x, city.y, city.id));
+        }
+
+        return citiesPath;
+    }
 }

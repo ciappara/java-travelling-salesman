@@ -1,90 +1,100 @@
 package app.utils;
+import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-import java.awt.*;
+
+import app.Helper;
+import app.TravelPathGenome;
 import app.models.*;
 
-//MyPanel is used to draw the points and edges on the GUI.java main interface.
-//The path displyed is the shortest path found from the Genetic.java program
+// SurfacePanel is used to draw the points and shortest path on the GUI
 public class SurfacePanel extends JPanel{
 
-    ArrayList<Integer> drawArray;
-	Map<Integer,Point> points;
     private static final long serialVersionUID = 1L;
 
-    ArrayList<City> cities;
-    ArrayList<City> bestPath;
+    CityPoints cities;
+    
+    TravelPathGenome minimumChromosome;
+    TravelPathGenome bestEverChromosome;
 
-    public SurfacePanel(ArrayList<City> cities) {
+    ArrayList<City> minimumPath;
+    ArrayList<City> bestEverPath;
+
+    int width, height;
+
+    public SurfacePanel(CityPoints cities, int width, int height) {
         this.cities = cities;
+        this.width = width;
+        this.height = height;
+        super.setPreferredSize(new Dimension(this.width, this.height));
     }
 
-    // updates the arrays for the cities and best path
-    public void update(ArrayList<City> cities, ArrayList<City> bestEverPath) {
-        this.cities = cities;
-        this.bestPath = bestEverPath;
+    ////////////////////////////////
+    // update arrays for cities 
+    // and best path
+    ////////////////////////////////
+    public void update(ArrayList<City> minimumPath, ArrayList<City> bestEverPath) {
+        this.minimumPath = minimumPath;
+        this.bestEverPath = bestEverPath;
+        
         this.repaint();
         this.revalidate();
     }
-    
 
+    ////////////////////////////////
+    // paint and repaint cities
+    // on panel
+    ////////////////////////////////
     public void paint(Graphics g) {
         // clean surface
         super.paint(g);
-
         Graphics2D g2 = (Graphics2D) g;
 
-        
         // paint current path
-        paintCities(g2, cities, 1, Color.BLACK, true);
-        paintCities(g2, bestPath, 2, Color.RED, false);
-
-        // g2.setStroke(new BasicStroke(1));
-        // g2.setColor(Color.BLACK);
-        // for(int i = 0; i < cities.size(); i++){
-        //     g2.drawOval(cities.get(i).x-3, cities.get(i).y-3, 6, 6);
-        //     if(i > 0) {
-        //         g2.drawLine(cities.get(i).x, cities.get(i).y, cities.get(i - 1).x, cities.get(i - 1).y);
-        //     }
-        // }
-
-        // // paint best path
-        // if(bestPath != null) {
-        //     g2.setStroke(new BasicStroke(2));
-        //     g2.setColor(Color.RED);
-        //     for(int i = 1; i < cities.size(); i++){
-        //         g2.drawLine(bestPath.get(i).x, bestPath.get(i).y, bestPath.get(i - 1).x, bestPath.get(i - 1).y);
-        //     }
-        // }
+        paintCities(g2, this.minimumPath, 1, Color.BLACK, true);
+        paintCities(g2, this.bestEverPath, 2, Color.RED, false);
     }
 
-
-    public void paintCities(Graphics2D g2, ArrayList<City> cities, int stroke, Color color, boolean drawCityPoint) {
+    ////////////////////////////////
+    // paint city points on panel
+    ////////////////////////////////
+    private void paintCities(Graphics2D g2, ArrayList<City> path, int stroke, Color color, boolean drawCityPoint) {
+        
         if(cities == null) {
             return;
         }
 
-        // paint current path
+        // set color options
         g2.setStroke(new BasicStroke(stroke));
         g2.setColor(color);
-        int scale = 10;
+
+        int scale = 1;
+        
         int cityPointSize = 8;
         int cityPointLocation = cityPointSize / 2;
 
-        for(int i = 0; i < cities.size(); i++){
+        // draw path
+        for(int i = 0; i < path.size(); i++){
             
-            City current = cities.get(i);
+            City current = path.get(i);
+
+            // remap current x and y from min/max to 800/600
+            int currentX = Helper.remap(current.x, this.cities.minX, this.cities.maxX, 10, this.width - 10);
+            int currentY = Helper.remap(current.y, this.cities.minY, this.cities.maxY, 10, this.height - 10);
+            System.out.println(current.x + "/" + current.y + " = " + currentX + "/" + currentY);
+
+            // draw city point
             if(drawCityPoint) {
-                g2.fillOval((current.x * scale) - cityPointLocation, (current.y * scale) - cityPointLocation, cityPointSize, cityPointSize);
+                g2.fillOval((currentX * scale) - cityPointLocation, (currentY * scale) - cityPointLocation, cityPointSize, cityPointSize);
             }
+
+            // draw line
             if(i > 0) {
-                City prev = cities.get(i - 1);
-                g2.drawLine(current.x * scale, current.y * scale, prev.x * scale, prev.y * scale);
+                City prev = path.get(i - 1);
+                int prevX = Helper.remap(prev.x, this.cities.minX, this.cities.maxX, 10, this.width - 10);
+                int prevY = Helper.remap(prev.y, this.cities.minY, this.cities.maxY, 10, this.height - 10);
+                g2.drawLine(currentX * scale, currentY * scale, prevX * scale, prevY * scale);
             }
         }
-    }
-
-    public void setSize(int width, int height){
-        super.setPreferredSize(new Dimension(width, height));
     }
 }

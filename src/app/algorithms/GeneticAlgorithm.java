@@ -1,21 +1,22 @@
-package app;
-import java.util.List;
+package app.algorithms;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import app.*;
 import app.models.*;
 
-public class Population {
+public class GeneticAlgorithm {
 
     int populationSize; // generation size
     int crossoverRate;  // reproduction size
     int maxIterations;
     float mutationRate;
-    int targetFitness;
     ArrayList<City> cities;
     
     int tournamentSize;
+    //int targetFitness;
 
-    public Population(ArrayList<City> cities, int targetFitness, int maxIterations) {
+    public GeneticAlgorithm(ArrayList<City> cities, int maxIterations) { //int targetFitness
         this.cities = cities;
         this.populationSize = 5000;
         this.crossoverRate = 100;
