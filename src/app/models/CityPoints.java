@@ -1,7 +1,7 @@
 package app.models;
 import java.util.*;
-import app.Helper;
 import app.TravelPathGenome;
+import app.utils.Helper;
 
 public class CityPoints {
 

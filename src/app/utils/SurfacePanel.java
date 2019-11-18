@@ -2,10 +2,9 @@ package app.utils;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-
-import app.Helper;
 import app.TravelPathGenome;
 import app.models.*;
+import app.utils.Helper;
 
 // SurfacePanel is used to draw the points and shortest path on the GUI
 public class SurfacePanel extends JPanel{
@@ -60,15 +59,13 @@ public class SurfacePanel extends JPanel{
     ////////////////////////////////
     private void paintCities(Graphics2D g2, ArrayList<City> path, int stroke, Color color, boolean drawCityPoint) {
         
-        if(cities == null) {
+        if(cities == null || path == null) {
             return;
         }
 
         // set color options
         g2.setStroke(new BasicStroke(stroke));
         g2.setColor(color);
-
-        int scale = 1;
         
         int cityPointSize = 8;
         int cityPointLocation = cityPointSize / 2;
@@ -81,11 +78,17 @@ public class SurfacePanel extends JPanel{
             // remap current x and y from min/max to 800/600
             int currentX = Helper.remap(current.x, this.cities.minX, this.cities.maxX, 10, this.width - 10);
             int currentY = Helper.remap(current.y, this.cities.minY, this.cities.maxY, 10, this.height - 10);
-            System.out.println(current.x + "/" + current.y + " = " + currentX + "/" + currentY);
+            //System.out.println(current.x + "/" + current.y + " = " + currentX + "/" + currentY);
 
             // draw city point
             if(drawCityPoint) {
-                g2.fillOval((currentX * scale) - cityPointLocation, (currentY * scale) - cityPointLocation, cityPointSize, cityPointSize);
+                if(i == 0) {
+                    g2.setColor(Color.GREEN);   
+                }
+                else {
+                    g2.setColor(color);
+                }
+                g2.fillOval(currentX - cityPointLocation, currentY - cityPointLocation, cityPointSize, cityPointSize);
             }
 
             // draw line
@@ -93,7 +96,7 @@ public class SurfacePanel extends JPanel{
                 City prev = path.get(i - 1);
                 int prevX = Helper.remap(prev.x, this.cities.minX, this.cities.maxX, 10, this.width - 10);
                 int prevY = Helper.remap(prev.y, this.cities.minY, this.cities.maxY, 10, this.height - 10);
-                g2.drawLine(currentX * scale, currentY * scale, prevX * scale, prevY * scale);
+                g2.drawLine(currentX, currentY, prevX, prevY);
             }
         }
     }

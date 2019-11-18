@@ -1,9 +1,13 @@
 package app.algorithms;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import app.*;
 import app.models.*;
+import app.utils.Helper;
+import app.utils.Surface;
 
 public class GeneticAlgorithm {
 
@@ -11,12 +15,13 @@ public class GeneticAlgorithm {
     int crossoverRate;  // reproduction size
     int maxIterations;
     float mutationRate;
-    ArrayList<City> cities;
+    ArrayList<City> cities2;
     
     int tournamentSize;
+    CityPoints cities;
     //int targetFitness;
 
-    public GeneticAlgorithm(ArrayList<City> cities, int maxIterations) { //int targetFitness
+    public GeneticAlgorithm(CityPoints cities, int maxIterations) { //int targetFitness
         this.cities = cities;
         this.populationSize = 5000;
         this.crossoverRate = 100;
@@ -36,8 +41,18 @@ public class GeneticAlgorithm {
     public List<TravelPathGenome> initialPopulation() {
         List<TravelPathGenome> population = new ArrayList<>();
 
+        // HashSet<Chromosome> hashSet = new HashSet<>();
+
+        // while (chromosomes.size() < maxSize) {
+        //     Chromosome chromo = new Chromosome(cities, random);
+        //     if (!hashSet.contains(chromo)) {
+        //         hashSet.add(chromo);
+        //         add(chromo);
+        //     }
+        // }
+
         for(int i = 0; i < populationSize; i++){
-            population.add(new TravelPathGenome(cities));
+            population.add(new TravelPathGenome(cities.points));
         }
 
         return population;
@@ -91,7 +106,7 @@ public class GeneticAlgorithm {
             List<Integer> genome = travelpath.getGenome();
             Collections.swap(genome, Helper.random().nextInt(genome.size()), Helper.random().nextInt(genome.size()));
 
-            return new TravelPathGenome(cities, genome);
+            return new TravelPathGenome(cities.points, genome);
         }
 
         // return same travel path if not mutated
@@ -130,13 +145,13 @@ public class GeneticAlgorithm {
         List<Integer> parent2Genome = new ArrayList<>(parents.get(1).getGenome());
 
         // creating child 1
-        children.add(createChild(0, breakpoint, parent1Genome, parent2Genome, cities));
+        children.add(createChild(0, breakpoint, parent1Genome, parent2Genome));
         
         // reset edited parent1 genome for the next child
         parent1Genome = parents.get(0).getGenome();
 
         // creating child 2
-        children.add(createChild(breakpoint, parents.size(), parent2Genome, parent1Genome, cities));
+        children.add(createChild(breakpoint, parents.size(), parent2Genome, parent1Genome));
 
         // for(int i = 0; i<breakpoint; i++){
         //     int newVal = parent2Genome.get(i);
@@ -159,7 +174,7 @@ public class GeneticAlgorithm {
     ////////////////////////////////
     // create crossover child
     ////////////////////////////////
-    private TravelPathGenome createChild(int startPoint, int endPoint, List<Integer> parent1genome, List<Integer> parent2genome, ArrayList<City> cities) {
+    private TravelPathGenome createChild(int startPoint, int endPoint, List<Integer> parent1genome, List<Integer> parent2genome) {
 
         // create new child
         for(int i = startPoint; i < endPoint; i++){
@@ -167,34 +182,71 @@ public class GeneticAlgorithm {
             Collections.swap(parent1genome, parent1genome.indexOf(newValue), i);
         }
 
-        return new TravelPathGenome(cities, parent1genome);
+        return new TravelPathGenome(this.cities.points, parent1genome);
     }
+
+
+    // ////////////////////////////////
+    // // optimise and find result
+    // ////////////////////////////////
+    // public TravelPathGenome optimize() {
+
+    //     List<TravelPathGenome> newPopulation = initialPopulation();
+    //     TravelPathGenome globalBestGenome = newPopulation.get(0);
+
+    //     for(int i=0; i < maxIterations; i++) {
+
+    //         List<TravelPathGenome> selectedPopulation = selection(newPopulation);
+    //         newPopulation = createPopulation(selectedPopulation);
+    //         globalBestGenome = Collections.min(newPopulation);
+
+    //         // breaks loop if target fitness is achieved
+    //         // if(globalBestGenome.getFitness() < targetFitness) {
+    //         //     break;
+    //         // }
+    //     }
+
+    //     return globalBestGenome;
+    // }
 
 
     ////////////////////////////////
     // optimise and find result
     ////////////////////////////////
-    public TravelPathGenome optimize() {
+    public TravelPathGenome optimize(Surface surface) {
 
-        List<TravelPathGenome> newPopulation = initialPopulation();
-        TravelPathGenome globalBestGenome = newPopulation.get(0);
+        List<TravelPathGenome> newPopulation = this.initialPopulation();
+        TravelPathGenome minimumChromosome = newPopulation.get(0);
+        TravelPathGenome bestEverChromosome = newPopulation.get(0);
 
-        for(int i=0; i < maxIterations; i++) {
+        for(int i=0; i < this.maxIterations; i++) {
 
-            List<TravelPathGenome> selectedPopulation = selection(newPopulation);
-            newPopulation = createPopulation(selectedPopulation);
-            globalBestGenome = Collections.min(newPopulation);
+            List<TravelPathGenome> selectedPopulation = this.selection(newPopulation);
+            newPopulation = this.createPopulation(selectedPopulation);
 
-            // breaks loop if target fitness is achieved
-            // if(globalBestGenome.getFitness() < targetFitness) {
-            //     break;
-            // }
+            // gets chromosome with minimum distance path of new population
+            minimumChromosome = Collections.min(newPopulation);
+
+            // test if min-dist chromosome has best ever path
+            if(minimumChromosome.getFitness() < bestEverChromosome.getFitness()) {
+                bestEverChromosome = minimumChromosome;
+            }
+
+            if(surface != null) {
+                // get current best and best ever chromosome paths
+                ArrayList<City> bestEverPath = cities.getPathFromChromosome(bestEverChromosome);
+                ArrayList<City> minimumPath = cities.getPathFromChromosome(minimumChromosome);
+    
+                // update panel with current-best and best-ever paths
+                surface.update(minimumPath, bestEverPath);
+                
+                // print current-best and best-ever path
+                System.out.println(minimumChromosome.toString() + " // ever: " + bestEverChromosome.getFitness());
+            }
         }
 
-        return globalBestGenome;
+        return bestEverChromosome;
     }
-
-
 
 
     // public void naturalSelection() {
@@ -267,8 +319,6 @@ public class GeneticAlgorithm {
         List<TravelPathGenome> selected = pickNRandomElements(population, tournamentSize);
         return Collections.min(selected);
     }
-
-
 
 
     ////////////////////////////////

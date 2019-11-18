@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import app.models.*;
 
-// creates a canvas to visualise all the cities and the connections between them
+// create canvas to visualise all cities and connections between them
 public class Surface {
 
     JFrame frame;
@@ -28,19 +28,6 @@ public class Surface {
         // refresh the jframe to update the plotted points and the shortest path distance.
         SwingUtilities.updateComponentTreeUI(frame);
         frame.setVisible(true);
-
-
-        // // create canvas to visualise all the points on your line
-		// frame = new JFrame("Genetic Algorithm for TSP");
-		// frame.setSize(800,600);
-        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // SurfacePanel panel = new SurfacePanel(drawArray, points);
-        // panel.setPrefferredSize(new Dimension(600,400));
-        // frame.add(panel, BorderLayout.NORTH);
-
-        // //refresh the jframe to update the plotted points and the shortest path distance.
-        // SwingUtilities.updateComponentTreeUI(frame);
     }
 
     public void update(ArrayList<City> minimumPath, ArrayList<City> bestEverPath) {
