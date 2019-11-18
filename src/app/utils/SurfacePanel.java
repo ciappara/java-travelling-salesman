@@ -1,7 +1,8 @@
-package app;
+package app.utils;
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
+import app.models.*;
 
 //MyPanel is used to draw the points and edges on the GUI.java main interface.
 //The path displyed is the shortest path found from the Genetic.java program
@@ -66,6 +67,7 @@ public class SurfacePanel extends JPanel{
         // paint current path
         g2.setStroke(new BasicStroke(stroke));
         g2.setColor(color);
+        int scale = 10;
         int cityPointSize = 8;
         int cityPointLocation = cityPointSize / 2;
 
@@ -73,11 +75,11 @@ public class SurfacePanel extends JPanel{
             
             City current = cities.get(i);
             if(drawCityPoint) {
-                g2.fillOval(current.x - cityPointLocation, current.y - cityPointLocation, cityPointSize, cityPointSize);
+                g2.fillOval((current.x * scale) - cityPointLocation, (current.y * scale) - cityPointLocation, cityPointSize, cityPointSize);
             }
             if(i > 0) {
                 City prev = cities.get(i - 1);
-                g2.drawLine(current.x, current.y, prev.x, prev.y);
+                g2.drawLine(current.x * scale, current.y * scale, prev.x * scale, prev.y * scale);
             }
         }
     }
