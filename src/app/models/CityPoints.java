@@ -1,7 +1,6 @@
-package app.data;
+package app.models;
 import java.util.*;
 import app.Helper;
-import app.models.*;
 
 public class CityPoints {
 
@@ -10,21 +9,40 @@ public class CityPoints {
     private int maxX = 0;
     private int maxY = 0;
 
-    private ArrayList<City> points;
-    private ArrayList<City> bestEver;
+    public ArrayList<City> points;
+    public ArrayList<City> bestEver;
 
-    private int surfaceWidth;
-    private int surfaceHeight;
+    private int surfaceWidth = 0;
+    private int surfaceHeight = 0;
+    private int randomPointsQty = 0;
 
     public CityPoints() {
-        surfaceWidth = 800;
-        surfaceHeight = 600;
+        this(800, 600, 20);
+    }
+
+    public CityPoints(int surfaceWidth, int surfaceHeight, int randomPointsQty) {
+        this.surfaceWidth = surfaceWidth;
+        this.surfaceHeight = surfaceHeight;
+        this.randomPointsQty = randomPointsQty;
+    }
+
+    ///////////////////////////////////////
+    // import or generate city points
+    ///////////////////////////////////////
+    public void getCityPoints(String filename) {
+
+        if(Helper.fileExists(filename)) {
+            importCityPoints(filename);
+        }
+        else {
+            generateCityPoints(randomPointsQty);
+        }
     }
 
     ///////////////////////////////////////
     // imports city points from test files
     ///////////////////////////////////////
-    public void importCityPoints(String filename) {
+    private void importCityPoints(String filename) {
 
         // reset cities array
         points = new ArrayList<>();
@@ -38,16 +56,14 @@ public class CityPoints {
             int x = (int) Double.parseDouble(words[1]);
             int y = (int) Double.parseDouble(words[2]);
 
-            if(x > )
-
-            points.add(new City(x, y, id));
+            addCityPoints(x, y, id);
         }
     }
 
     ///////////////////////////////////////
     // generates random city points
     ///////////////////////////////////////
-    public void generateCityPoints(int citiesQty) {
+    private void generateCityPoints(int citiesQty) {
 
         // reset cities array
         points = new ArrayList<>();
@@ -64,7 +80,7 @@ public class CityPoints {
     // set max/min points for visualization
     // and add xy coordinates as new city
     ///////////////////////////////////////
-    public void addCityPoints(int x, int y, int id) {
+    private void addCityPoints(int x, int y, int id) {
 
         // set max/min points
         maxX = x > maxX ? x : maxX;

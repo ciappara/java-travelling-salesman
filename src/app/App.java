@@ -1,53 +1,54 @@
 package app;
 import java.util.*;
 import javax.swing.*;
-import java.awt.geom.Point2D;
+//import java.awt.geom.Point2D;
 import app.models.*;
 import app.utils.*;
-import app.data.*;
 
 public class App {
 
-    static int citiesQty = 20, surfaceWidth = 800, surfaceHeight = 600;
-    static ArrayList<City> cities;
-    static ArrayList<City> bestEverPath;
+    private static CityPoints cities;
+
+    // parameter values
+    private static int surfaceWidth = 800;
+    private static int surfaceHeight = 600;
+    private static int randomPointsQty = 20;
+    private static int maxIterations = 1000;
+
+
+
+    // static ArrayList<City> cities;
+    // static ArrayList<City> bestEverPath;
     static double bestEverDistance = -1.0;
 
-    private static CityPoints points;
 
     private static boolean isTest = true;
     private static SurfacePanel panel;
     
     public static void main(String[] args) throws Exception {
 
+        // load or generate cities
+        App.cities = new CityPoints(surfaceWidth, surfaceHeight, randomPointsQty);
+        App.cities.getCityPoints("test2tsp.txt");
         
-        // todo: load cities
-        cities = Import.GetCities("test2tsp.txt");
-        if(cities.size() <= 0) {
-            createRandomCityPoints(App.citiesQty);  
-        }
-
-        // randomise cities if nothing is loaded
-        //cities = new ArrayList<City>();
-        //createRandomCityPoints(App.citiesQty);
-
-        
-        // visualise
+        // visualise if in test mode
         if(isTest) { 
             visualise();
         }
         
-        int maxIterations = 5000;
-        Population geneticAlgorithm = new Population(cities, 1, maxIterations);
-        TravelPathGenome result;
+        Population geneticAlgorithm = new Population(App.cities.points, 1, App.maxIterations);
+
+        TravelPathGenome bestChromosone;
+        
         if(isTest) {
-            result = optimizeWithPanel(geneticAlgorithm, maxIterations);
+            bestChromosone = optimizeWithPanel(geneticAlgorithm, maxIterations);
         }
         else {
-            result = geneticAlgorithm.optimize();
-            printResultOnPanel(result);
+            bestChromosone = geneticAlgorithm.optimize();
+            printResultOnPanel(bestChromosone);
         }
-        System.out.println(result);
+
+        System.out.println(bestChromosone);
     }
 
 
@@ -96,7 +97,7 @@ public class App {
         ArrayList<City> genomeAsPath = new ArrayList<City>();
 
         for(int gene : genome.genome) {
-            City city = cities.get(gene);
+            City city = cities.points.get(gene);
             genomeAsPath.add(new City(city.x, city.y, city.id));
         }
 
@@ -113,81 +114,81 @@ public class App {
 
 
 
-    public static void main2(String[] args) throws Exception {
+    // public static void main2(String[] args) throws Exception {
 
-        cities = new ArrayList<City>();
-        bestEverPath = new ArrayList<City>();
+    //     cities = new ArrayList<City>();
+    //     bestEverPath = new ArrayList<City>();
 
-        // todo: load cities
+    //     // todo: load cities
 
-        // randomise cities if nothing is loaded
-        createRandomCityPoints(App.citiesQty);
+    //     // randomise cities if nothing is loaded
+    //     createRandomCityPoints(App.citiesQty);
 
-        // initialise distance
-        findBestEver();
+    //     // initialise distance
+    //     findBestEver();
 
-        // visualise
-        if(isTest) { 
-            visualise();
-        }
+    //     // visualise
+    //     if(isTest) { 
+    //         visualise();
+    //     }
         
-        //randomSelection();
+    //     //randomSelection();
 
-        int maxIterations = 1000;
-        Population geneticAlgorithm = new Population(cities, 1, maxIterations);
-        TravelPathGenome result;
-        if(isTest) {
-            result = optimizeWithPanel(geneticAlgorithm, maxIterations);
-        }
-        else {
-            result = geneticAlgorithm.optimize();
-        }
-        System.out.println(result);
-    }
+    //     int maxIterations = 1000;
+    //     Population geneticAlgorithm = new Population(cities, 1, maxIterations);
+    //     TravelPathGenome result;
+    //     if(isTest) {
+    //         result = optimizeWithPanel(geneticAlgorithm, maxIterations);
+    //     }
+    //     else {
+    //         result = geneticAlgorithm.optimize();
+    //     }
+    //     System.out.println(result);
+    // }
 
-    public static void randomSelection() {
+    // public static void randomSelection() {
 
-        // swap cities to find the best path
-        for(int i = 0; i < 1000000; i++) {
-            int a = (int) Math.floor(Helper.random().nextInt(cities.size() - 1)) + 1;
-            int b = (int) Math.floor(Helper.random().nextInt(cities.size() - 1)) + 1;
-            Helper.swap(cities, a, b);
-            findBestEver();
+    //     // swap cities to find the best path
+    //     for(int i = 0; i < 1000000; i++) {
+    //         int a = (int) Math.floor(Helper.random().nextInt(cities.size() - 1)) + 1;
+    //         int b = (int) Math.floor(Helper.random().nextInt(cities.size() - 1)) + 1;
+    //         Helper.swap(cities, a, b);
+    //         findBestEver();
             
-            if(isTest) {
-                panel.update(cities, bestEverPath);
-                SwingUtilities.updateComponentTreeUI(panel);
-            }
-        }
-    }
+    //         if(isTest) {
+    //             panel.update(cities, bestEverPath);
+    //             SwingUtilities.updateComponentTreeUI(panel);
+    //         }
+    //     }
+    // }
 
-    // find the best ever distance and store the path
-    public static void findBestEver() {
-        double totalDistance = calculateDistance();
+    // // find the best ever distance and store the path
+    // public static void findBestEver() {
+    //     double totalDistance = calculateDistance();
 
-        if(bestEverDistance == -1 || totalDistance < bestEverDistance) {
-            bestEverDistance = totalDistance;
-            bestEverPath = new ArrayList<>(cities);
+    //     if(bestEverDistance == -1 || totalDistance < bestEverDistance) {
+    //         bestEverDistance = totalDistance;
+    //         bestEverPath = new ArrayList<>(cities);
 
-            if(isTest) {
-                System.out.println("bestEver: " + bestEverDistance);
-            }
-        }
-    }
+    //         if(isTest) {
+    //             System.out.println("bestEver: " + bestEverDistance);
+    //         }
+    //     }
+    // }
 
-    // calculate distance between two points
-    public static double calculateDistance() {
-        double totalDistance = 0;
+    // // calculate distance between two points
+    // public static double calculateDistance() {
+    //     double totalDistance = 0;
 
-        for(int i = 0; i < cities.size() - 1; i++) {
-            City city = cities.get(i);
-            City next = cities.get(i + 1);
-            double dist = Point2D.distance(city.x, city.y, next.x, next.y);
-            totalDistance += dist;
-        }
+    //     for(int i = 0; i < cities.size() - 1; i++) {
+    //         City city = cities.get(i);
+    //         City next = cities.get(i + 1);
+    //         double dist = Point2D.distance(city.x, city.y, next.x, next.y);
+    //         totalDistance += dist;
+    //     }
 
-        return totalDistance;
-    }
+    //     return totalDistance;
+    // }
 
     // create a new jpanel to visualise the city points and best ever path
     public static void visualise() {
@@ -199,7 +200,7 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // setup panel for the graphics
-        panel = new SurfacePanel(cities);
+        panel = new SurfacePanel(App.cities.points);
         panel.setSize(surfaceWidth, surfaceHeight);
         frame.add(panel);
 
