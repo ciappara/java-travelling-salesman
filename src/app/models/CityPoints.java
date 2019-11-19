@@ -17,6 +17,9 @@ public class CityPoints {
     private int surfaceHeight = 0;
     private int randomPointsQty = 0;
 
+    // notes: sort by x and y
+
+
     public CityPoints() {
         this(800, 600, 20);
     }
@@ -75,6 +78,19 @@ public class CityPoints {
             
             addCityPoints(x, y, i);
         }
+
+
+        StringBuilder sb = new StringBuilder();
+        for (City city : points) {
+            sb.append(city.id);
+            sb.append(" ");
+            sb.append(city.x);
+            sb.append(" ");
+            sb.append(city.y);
+            sb.append(System.getProperty("line.separator"));
+            //sb.append("\n");
+        }
+        Helper.writeToFile(sb.toString());
     }
 
     ///////////////////////////////////////

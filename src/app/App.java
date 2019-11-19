@@ -1,6 +1,7 @@
 package app;
 import java.util.*;
 import app.algorithms.GeneticAlgorithm;
+import app.algorithms.NearestNeighbour;
 import app.models.*;
 import app.utils.*;
 
@@ -16,25 +17,32 @@ public class App {
     private static CityPoints cities;
     private static Surface surface;
     private static boolean isTest = true;
-    private static String algorithm = "GA";
+    private static String algorithm = "NN";
     private static TravelChromosome bestChromosone;
     
     public static void main(String[] args) throws Exception {
 
         // load or generate cities
         App.cities = new CityPoints(surfaceWidth, surfaceHeight, randomPointsQty);
-        App.cities.getCityPoints(""); //"test1tsp.txt");
+        App.cities.getCityPoints("random-2019-11-19-12-37-33.txt"); //"test1tsp.txt");
         
         // visualise if in test mode
         if(isTest) {
             visualise();
         }
+
         
         if(algorithm == "GA") {
             // create population using a genetic algorithm
             GeneticAlgorithm population = new GeneticAlgorithm(App.cities, App.maxIterations);
             bestChromosone = population.optimize(surface);
         }
+        else if(algorithm == "NN") {
+            NearestNeighbour population = new NearestNeighbour();
+            bestChromosone = population.optimize(App.cities);
+            visualiseResult(bestChromosone);
+        }
+
 
         if(!isTest) {
             visualiseResult(bestChromosone);
@@ -57,7 +65,7 @@ public class App {
         visualise();
 
         ArrayList<City> bestEverPath = cities.getPathFromChromosome(chromosome);
-        System.out.println(bestEverPath.toString());
+        System.out.println(cities.toString());
 
         // todo: fix update to allow only for one value
         surface.update(bestEverPath, bestEverPath);

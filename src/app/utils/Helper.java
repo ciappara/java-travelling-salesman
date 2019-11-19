@@ -1,10 +1,11 @@
 package app.utils;
+import app.models.*;
 import java.io.*;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.text.SimpleDateFormat;
-import app.models.*;
 
 public class Helper {
 
@@ -55,6 +56,30 @@ public class Helper {
         }
         return cloned;
     }
+
+        // Function to insert x in arr at position pos 
+        public static Integer[] splice(int n, Integer[] arr, int x, int pos) 
+        { 
+            int i; 
+
+            // create a new array of size n+1 
+            Integer[] newarr = new Integer[n]; 
+
+            // insert the elements from 
+            // the old array into the new array 
+            // insert all elements till pos 
+            // then insert x at pos 
+            // then insert rest of the elements 
+            for (i = 1; i < n; i++) { 
+                if (i < pos - 1)
+                    newarr[i] = arr[i];
+                else if (i == pos - 1) 
+                    newarr[i] = x; 
+                else
+                    newarr[i] = arr[i - 1]; 
+            } 
+            return newarr; 
+        } 
 
     ////////////////////////////////
     // remaps value to an equivalent
@@ -121,17 +146,32 @@ public class Helper {
     ////////////////////////////////
     public static void writeToFile(String text) {
         try {
-            FileWriter fw = new FileWriter(getFilesPath() + "write.txt");
-    
             Date date = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            System.out.println(formatter.format(date));
-    
-            fw.write(text + " - " + formatter.format(date));
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+            FileWriter fw = new FileWriter(getFilesPath() + "random-" + formatter.format(date) + ".txt");
+            fw.write(text);
             fw.close();
+
+            // Date date = new Date();
+            // SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            // System.out.println(formatter.format(date))
+            // fw.write(text + " - " + formatter.format(date));
+            // fw.close();
         }
         catch(IOException ioex) {
             System.out.println(ioex.getMessage());
         }
+    }
+    
+    // Helper class testing
+    public static void main(String[] args) {
+
+        Integer[] parent1Chromosome = new Integer[] { 1, 8, 2, 7, 3, 6, 4, 5, 0};
+        Integer[] parent2Chromosome = new Integer[] { 2, 4, 6, 8, 0, 1, 3, 5, 7};
+
+
+        System.out.println(Arrays.toString(parent1Chromosome));
+        parent1Chromosome = splice(parent1Chromosome.length, parent1Chromosome, 0, 5 + 1);
+        System.out.println(Arrays.toString(parent1Chromosome));
     }
 }
