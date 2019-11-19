@@ -10,14 +10,14 @@ public class App {
     private static int surfaceWidth = 800;
     private static int surfaceHeight = 800;
     private static int randomPointsQty = 50;
-    private static int maxIterations = 1000;
+    private static int maxIterations = 2000;
 
     // global variables
     private static CityPoints cities;
     private static Surface surface;
     private static boolean isTest = true;
     private static String algorithm = "GA";
-    private static TravelPathGenome bestChromosone;
+    private static TravelChromosome bestChromosone;
     
     public static void main(String[] args) throws Exception {
 
@@ -53,7 +53,7 @@ public class App {
     ////////////////////////////////
     // visualise result points
     ////////////////////////////////
-    public static void visualiseResult(TravelPathGenome chromosome) {
+    public static void visualiseResult(TravelChromosome chromosome) {
         visualise();
 
         ArrayList<City> bestEverPath = cities.getPathFromChromosome(chromosome);

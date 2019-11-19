@@ -1,5 +1,5 @@
 package app.core;
-import app.TravelPathGenome;
+import app.TravelChromosome;
 import app.models.City;
 import app.utils.Helper;
 import java.util.Arrays;
@@ -10,9 +10,9 @@ public class Mutation {
     private Mutation() {}
 
     // Mutate selected travel chromosome
-    public static TravelPathGenome mutate(ArrayList<City> cityPoints, TravelPathGenome travelpath, float mutationRate) {
+    public static TravelChromosome mutate(ArrayList<City> cityPoints, TravelChromosome travelpath, float mutationRate) {
 
-        return new TravelPathGenome(cityPoints, mutate(travelpath.getOrderChromosome(), mutationRate));
+        return new TravelChromosome(cityPoints, mutate(travelpath.getOrderChromosome(), mutationRate));
     }
 
     // Mutate selected chromosome

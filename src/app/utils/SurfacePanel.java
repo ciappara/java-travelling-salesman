@@ -2,7 +2,7 @@ package app.utils;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-import app.TravelPathGenome;
+import app.TravelChromosome;
 import app.models.*;
 import app.utils.Helper;
 
@@ -13,8 +13,8 @@ public class SurfacePanel extends JPanel{
 
     CityPoints cities;
     
-    TravelPathGenome minimumChromosome;
-    TravelPathGenome bestEverChromosome;
+    TravelChromosome minimumChromosome;
+    TravelChromosome bestEverChromosome;
 
     ArrayList<City> minimumPath;
     ArrayList<City> bestEverPath;

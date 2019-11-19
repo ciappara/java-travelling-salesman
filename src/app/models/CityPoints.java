@@ -1,6 +1,6 @@
 package app.models;
 import java.util.*;
-import app.TravelPathGenome;
+import app.TravelChromosome;
 import app.utils.Helper;
 
 public class CityPoints {
@@ -97,7 +97,7 @@ public class CityPoints {
     // order cities according to the path
     // in the chromosome
     ///////////////////////////////////////
-    public ArrayList<City> getPathFromChromosome(TravelPathGenome chromosome) {
+    public ArrayList<City> getPathFromChromosome(TravelChromosome chromosome) {
         
         ArrayList<City> citiesPath = new ArrayList<City>();
 

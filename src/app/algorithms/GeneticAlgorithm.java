@@ -23,7 +23,7 @@ public class GeneticAlgorithm {
 
     public GeneticAlgorithm(CityPoints cities, int maxIterations) { //int targetFitness
         this.cities = cities;
-        this.populationSize = 800;
+        this.populationSize = 1000;
         this.crossoverRate = 90;
         this.maxIterations = maxIterations; //1000;
         this.mutationRate = 0.4f;
@@ -37,15 +37,15 @@ public class GeneticAlgorithm {
     ////////////////////////////////
     // optimise and find result
     ////////////////////////////////
-    public TravelPathGenome optimize(Surface surface) {
+    public TravelChromosome optimize(Surface surface) {
 
-        List<TravelPathGenome> population = this.initialPopulation();
-        TravelPathGenome minimumChromosome = population.get(0);
-        TravelPathGenome bestEverChromosome = population.get(0);
+        List<TravelChromosome> population = this.initialPopulation();
+        TravelChromosome minimumChromosome = population.get(0);
+        TravelChromosome bestEverChromosome = population.get(0);
 
-        for(int i=0; i < this.maxIterations; i++) {
+        for(int i = 0; i < this.maxIterations; i++) {
 
-            List<TravelPathGenome> selectedPopulation = this.selection(population);
+            List<TravelChromosome> selectedPopulation = this.selection(population);
             population = this.createPopulation(selectedPopulation);
 
             // gets chromosome with minimum distance path of new population
@@ -75,18 +75,20 @@ public class GeneticAlgorithm {
 
 
     // Create initial generation/population
-    public List<TravelPathGenome> initialPopulation() {
-        List<TravelPathGenome> population = new ArrayList<>();
-        HashSet<TravelPathGenome> hashSet = new HashSet<>();
+    public List<TravelChromosome> initialPopulation() {
 
+        int numberOfCities = cities.points.size();
+        HashSet<Integer[]> hashSet = new HashSet<>();
+        List<TravelChromosome> population = new ArrayList<>();
+        
         while (population.size() < populationSize) {
 
             // create new shuffled cities order
-            TravelPathGenome chromo = new TravelPathGenome(cities.points);
-            if (!hashSet.contains(chromo)) {
+            Integer[] chromosome = TravelChromosome.shuffleCityOrder(numberOfCities);
+            if (!hashSet.contains(chromosome)) {
 
-                hashSet.add(chromo);
-                population.add(chromo);
+                hashSet.add(chromosome);
+                population.add(new TravelChromosome(cities.points, chromosome));
             }
         }
 
@@ -94,10 +96,11 @@ public class GeneticAlgorithm {
     }
 
     // Create new population
-    public List<TravelPathGenome> createPopulation(List<TravelPathGenome> selectedPopulation){
+    public List<TravelChromosome> createPopulation(List<TravelChromosome> selectedPopulation){
 
         HashSet<Integer[]> hashSet = new HashSet<>();
-        List<TravelPathGenome> newPopulation = new ArrayList<>();
+        List<TravelChromosome> newPopulation = new ArrayList<>();
+        //int randPercentage = (int) (populationSize * 0.2);
 
         while(newPopulation.size() < populationSize){
 
@@ -115,32 +118,24 @@ public class GeneticAlgorithm {
                 if (!hashSet.contains(child)) {
 
                     hashSet.add(child);
-                    newPopulation.add(new TravelPathGenome(cities.points, child));
+                    newPopulation.add(new TravelChromosome(cities.points, child));
                 }
             }
         }
 
+        
+        // while(newPopulation.size() < populationSize) {
+        //     // create new shuffled cities order
+        //     Integer[] chromosome = TravelChromosome.shuffleCityOrder(cities.points.size());
+        //     if (!hashSet.contains(chromosome)) {
+
+        //         hashSet.add(chromosome);
+        //         newPopulation.add(new TravelChromosome(cities.points, chromosome));
+        //     }
+        // }
+
         return newPopulation;
     }
-
-
-    // ////////////////////////////////
-    // // mutate selected genome
-    // ////////////////////////////////
-    // public TravelPathGenome mutate(TravelPathGenome travelpath) {
-
-    //     float mutate = Helper.random().nextFloat();
-
-    //     if(mutate < mutationRate) {
-    //         List<Integer> genome = travelpath.getGenome();
-    //         Collections.swap(genome, Helper.random().nextInt(genome.size()), Helper.random().nextInt(genome.size()));
-
-    //         return new TravelPathGenome(cities.points, genome);
-    //     }
-
-    //     // return same travel path if not mutated
-    //     return travelpath;
-    // }
     
 
     ////////////////////////////////
@@ -169,7 +164,7 @@ public class GeneticAlgorithm {
     //  * @param r     the Random object for selecting a point
     //  * @return      the children
     //  */
-    // public ArrayList<TravelPathGenome> orderCrossover (TravelPathGenome p1, TravelPathGenome p2) {
+    // public ArrayList<TravelChromosome> orderCrossover (TravelChromosome p1, TravelChromosome p2) {
     //     Integer[] parent1 = p1.getOrderChromosome();
     //     Integer[] parent2 = p2.getOrderChromosome();
 
@@ -185,7 +180,7 @@ public class GeneticAlgorithm {
     //     ArrayList<Integer> citiesNotInChild1 = new ArrayList<>();
     //     ArrayList<Integer> citiesNotInChild2 = new ArrayList<>();
 
-    //     ArrayList<TravelPathGenome> children = new ArrayList<>();
+    //     ArrayList<TravelChromosome> children = new ArrayList<>();
     //     int totalCities = parent1.length;
 
     //     // first and second point crossover
@@ -248,8 +243,8 @@ public class GeneticAlgorithm {
     //         child2[emptySpotsC2.remove(0)] = city;
     //     }
 
-    //     TravelPathGenome childOne = new TravelPathGenome(cities.points, child1);
-    //     TravelPathGenome childTwo = new TravelPathGenome(cities.points, child2);
+    //     TravelChromosome childOne = new TravelChromosome(cities.points, child1);
+    //     TravelChromosome childTwo = new TravelChromosome(cities.points, child2);
     //     children.add(childOne);
     //     children.add(childTwo);
 
@@ -269,7 +264,7 @@ public class GeneticAlgorithm {
     //  * @param r     the Random object for selecting a point
     //  * @return      the children
     //  */
-    // public ArrayList<TravelPathGenome> orderCrossover (TravelPathGenome p1, TravelPathGenome p2, Random r) {
+    // public ArrayList<TravelChromosome> orderCrossover (TravelChromosome p1, TravelChromosome p2, Random r) {
     //     ArrayList<City> parent1 = cities.getPathFromChromosome(p1);
     //     ArrayList<City> parent2 = cities.getPathFromChromosome(p2);
 
@@ -285,7 +280,7 @@ public class GeneticAlgorithm {
     //     ArrayList<City> citiesNotInChild1 = new ArrayList<>();
     //     ArrayList<City> citiesNotInChild2 = new ArrayList<>();
 
-    //     ArrayList<TravelPathGenome> children = new ArrayList<>();
+    //     ArrayList<TravelChromosome> children = new ArrayList<>();
     //     int totalCities = parent1.size();
 
     //     int firstPoint = r.nextInt(totalCities);
@@ -347,8 +342,8 @@ public class GeneticAlgorithm {
     //         child2[emptySpotsC2.remove(0)] = city;
     //     }
 
-    //     TravelPathGenome childOne = new TravelPathGenome(child1);
-    //     TravelPathGenome childTwo = new TravelPathGenome(child2);
+    //     TravelChromosome childOne = new TravelChromosome(child1);
+    //     TravelChromosome childTwo = new TravelChromosome(child2);
     //     children.add(childOne);
     //     children.add(childTwo);
 
@@ -367,7 +362,7 @@ public class GeneticAlgorithm {
 
 
     // public void naturalSelection() {
-    //     this.matingPool = new List<TravelPathGenome>();
+    //     this.matingPool = new List<TravelChromosome>();
 
     //     // find the maximum fitness
     //     float maxFitness = 0;
@@ -403,13 +398,13 @@ public class GeneticAlgorithm {
      * @param random        the Random object for randomly selecting
      * @return              usually the fittest Chromosome from k randomly selected chromosomes
      */
-    // static TravelPathGenome tournamentSelection (Population population, int k) {
+    // static TravelChromosome tournamentSelection (Population population, int k) {
     //     if (k < 1) {
     //         throw new IllegalArgumentException("K must be greater than 0.");
     //     }
 
-    //     TravelPathGenome[] populationAsArray = population.getChromosomes();
-    //     ArrayList<TravelPathGenome> kChromosomes = getKChromosomes(populationAsArray, k);
+    //     TravelChromosome[] populationAsArray = population.getChromosomes();
+    //     ArrayList<TravelChromosome> kChromosomes = getKChromosomes(populationAsArray, k);
     //     return getChromosome(kChromosomes);
     // }
 
@@ -420,12 +415,12 @@ public class GeneticAlgorithm {
      * @param random    the Random object used for picking a random chromosomes
      * @return          k randomly selected chromosomes
      */
-    private static ArrayList<TravelPathGenome> getKChromosomes (TravelPathGenome[] pop, int k) {
+    private static ArrayList<TravelChromosome> getKChromosomes (TravelChromosome[] pop, int k) {
 
-        ArrayList<TravelPathGenome> kChromosomes = new ArrayList<>();
+        ArrayList<TravelChromosome> kChromosomes = new ArrayList<>();
 
         for (int j = 0; j < k; j++) {
-            TravelPathGenome chromosome = pop[Helper.random().nextInt(pop.length)];
+            TravelChromosome chromosome = pop[Helper.random().nextInt(pop.length)];
             kChromosomes.add(chromosome);
         }
 
@@ -439,9 +434,9 @@ public class GeneticAlgorithm {
      * @param random        the Random object used for selecting a random Chromosome if needed
      * @return              usually the best Chromosome
      */
-    private static TravelPathGenome getChromosome (ArrayList<TravelPathGenome> arrayList) {
+    private static TravelChromosome getChromosome (ArrayList<TravelChromosome> arrayList) {
 
-        TravelPathGenome bestChromosome = getBestChromosome(arrayList);
+        TravelChromosome bestChromosome = getBestChromosome(arrayList);
         int ODDS_OF_NOT_PICKING_FITTEST = 5;
 
         // 1 in 5 chance to return a chromosome that is not the best.
@@ -458,11 +453,11 @@ public class GeneticAlgorithm {
      * @param arrayList     the list to search
      * @return              the best chromosome
      */
-    private static TravelPathGenome getBestChromosome (ArrayList<TravelPathGenome> arrayList) {
+    private static TravelChromosome getBestChromosome (ArrayList<TravelChromosome> arrayList) {
 
-        TravelPathGenome bestC = null;
+        TravelChromosome bestC = null;
 
-        for (TravelPathGenome c : arrayList) {
+        for (TravelChromosome c : arrayList) {
             if (bestC == null) {
                 bestC = c;
             } else if (c.getFitness() < bestC.getFitness()) {
@@ -476,10 +471,10 @@ public class GeneticAlgorithm {
 
 
 
-    public List<TravelPathGenome> selection(List<TravelPathGenome> population) {
+    public List<TravelChromosome> selection(List<TravelChromosome> population) {
 
-        List<TravelPathGenome> selected = new ArrayList<>();
-        HashSet<TravelPathGenome> hashSet = new HashSet<>();
+        List<TravelChromosome> selected = new ArrayList<>();
+        HashSet<TravelChromosome> hashSet = new HashSet<>();
 
         //for(int i=0; i < crossoverRate; i++){
         while(selected.size() < crossoverRate) {
@@ -493,7 +488,7 @@ public class GeneticAlgorithm {
             // add children to new population
             //newPopulation.addAll(children);
 
-            TravelPathGenome chromosome = tournamentSelection(population);
+            TravelChromosome chromosome = tournamentSelection(population);
             if (!hashSet.contains(chromosome)) {
                 hashSet.add(chromosome);
                 selected.add(chromosome);
@@ -507,18 +502,18 @@ public class GeneticAlgorithm {
     
 
     // select the min chromosome from the random elements selected
-    public TravelPathGenome tournamentSelection(List<TravelPathGenome> population) {
-        List<TravelPathGenome> selected = pickNRandomElements(population, tournamentSize);
+    public TravelChromosome tournamentSelection(List<TravelChromosome> population) {
+        List<TravelChromosome> selected = pickNRandomElements(population, tournamentSize);
         return Collections.min(selected);
     }
 
 
-    public TravelPathGenome rouletteSelection(List<TravelPathGenome> population){
-        int totalFitness = population.stream().map(TravelPathGenome::getFitness).mapToInt(Integer::intValue).sum();
+    public TravelChromosome rouletteSelection(List<TravelChromosome> population){
+        int totalFitness = population.stream().map(TravelChromosome::getFitness).mapToInt(Integer::intValue).sum();
         int selectedValue = Helper.random().nextInt(totalFitness);
         float recValue = (float) 1/selectedValue;
         float currentSum = 0;
-        for(TravelPathGenome genome : population){
+        for(TravelChromosome genome : population){
             currentSum += (float) 1/genome.getFitness();
             if(currentSum >= recValue){
                 return genome;
@@ -532,9 +527,9 @@ public class GeneticAlgorithm {
     ////////////////////////////////
     // print selected population
     ////////////////////////////////
-    public void printPopulation(List<TravelPathGenome> population) {
+    public void printPopulation(List<TravelChromosome> population) {
 
-        for(TravelPathGenome genome : population) {
+        for(TravelChromosome genome : population) {
             System.out.println(genome);
         }
     }

@@ -10,7 +10,7 @@ import app.utils.Helper;
 // it's handy to just pick one so you could rely on it being the same
 // across genomes
 
-public class TravelPathGenome implements Comparable<TravelPathGenome> {
+public class TravelChromosome implements Comparable<TravelChromosome> {
     
     private Integer[] orderChromosome; // cities' list in order in which they should be visited
     private double totalDistance;
@@ -18,14 +18,19 @@ public class TravelPathGenome implements Comparable<TravelPathGenome> {
 
 
     // Generate random travel path
-    public TravelPathGenome(ArrayList<City> cityPoints) {
+    public TravelChromosome(int numberOfCities) {
+        this.orderChromosome = this.shuffleCityOrder(numberOfCities);
+    }
+
+    // Generate random travel path
+    public TravelChromosome(ArrayList<City> cityPoints) {
         this.orderChromosome = this.shuffleCityOrder(cityPoints.size());
         //this.resetStartingCity();
         this.calculateFitness(cityPoints);
     }
 
     // Generate travel path with a user-defined chromosome
-    public TravelPathGenome(ArrayList<City> cityPoints, Integer[] chromosome) {
+    public TravelChromosome(ArrayList<City> cityPoints, Integer[] chromosome) {
         this.orderChromosome = chromosome;
         //this.resetStartingCity();
         this.calculateFitness(cityPoints);
@@ -36,13 +41,13 @@ public class TravelPathGenome implements Comparable<TravelPathGenome> {
     ////////////////
 
     // PRV: Generate random chromosome using number of cities and shuffle
-    private Integer[] shuffleCityOrder(int numberOfCities) {
+    public static Integer[] shuffleCityOrder(int numberOfCities) {
         Integer[] chromosome = new Integer[numberOfCities];
         return shuffleCityOrder(chromosome);
     }
 
     // PRV: Shuffle chromosom
-    private Integer[] shuffleCityOrder(Integer[] chromosome) {
+    public static Integer[] shuffleCityOrder(Integer[] chromosome) {
         
         if(chromosome.length != 0 && chromosome[0] == null) {
     
@@ -125,7 +130,7 @@ public class TravelPathGenome implements Comparable<TravelPathGenome> {
     }
 
     @Override
-    public int compareTo(TravelPathGenome chromosome) {
+    public int compareTo(TravelChromosome chromosome) {
 
         if(this.fitness > chromosome.getFitness()) {
             return 1;

@@ -46,7 +46,7 @@ public class Crossover {
     
 
     // // Create crossover child with one endpoint
-    // public TravelPathGenome createChildChromosome(int startPoint, int endPoint, Integer[] childChromosome, Integer[] parentChromosome) {
+    // public TravelChromosome createChildChromosome(int startPoint, int endPoint, Integer[] childChromosome, Integer[] parentChromosome) {
 
     //     for(int i = startPoint; i < endPoint; i++){
     //         int parentGene = parentChromosome[i];
@@ -54,7 +54,7 @@ public class Crossover {
     //         Helper.swap(childChromosome, childIndexOf, i);
     //     }
 
-    //     return new TravelPathGenome(this.cities.points, childChromosome);
+    //     return new TravelChromosome(this.cities.points, childChromosome);
     // }
 
 
