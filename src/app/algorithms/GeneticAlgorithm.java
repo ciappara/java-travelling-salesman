@@ -7,6 +7,7 @@ import java.util.List;
 import app.*;
 import app.core.Crossover;
 import app.core.Mutation;
+import app.core.Selection;
 import app.models.*;
 import app.utils.Helper;
 import app.utils.Surface;
@@ -45,7 +46,7 @@ public class GeneticAlgorithm {
 
         for(int i = 0; i < this.maxIterations; i++) {
 
-            List<TravelChromosome> selectedPopulation = this.selection(population);
+            List<TravelChromosome> selectedPopulation = Selection.select(population, crossoverRate, tournamentSize);
             population = this.createPopulation(selectedPopulation);
 
             // gets chromosome with minimum distance path of new population
@@ -138,18 +139,6 @@ public class GeneticAlgorithm {
     }
     
 
-    ////////////////////////////////
-    // generic pick randome elements
-    ////////////////////////////////
-    public static <E> List<E> pickNRandomElements(List<E> list, int n) {
-        int length = list.size();
-        if (length < n) return null;
-
-        for (int i = length - 1; i >= length - n; --i) {
-            Collections.swap(list, i, Helper.random().nextInt(i + 1));
-        }
-        return list.subList(length - n, length);
-    }
     
 
 
@@ -469,66 +458,6 @@ public class GeneticAlgorithm {
     }
 
 
-
-
-    public List<TravelChromosome> selection(List<TravelChromosome> population) {
-
-        List<TravelChromosome> selected = new ArrayList<>();
-        HashSet<TravelChromosome> hashSet = new HashSet<>();
-
-        // the crossover rate will be the new population size!!!
-        // so this 
-
-
-        // SELECT TOP ROWS FIRST
-
-
-        //for(int i=0; i < crossoverRate; i++){
-        while(selected.size() < crossoverRate) {
-            // if(selectionType == SelectionType.ROULETTE){
-            //     selected.add(rouletteSelection(population));
-            // }
-            // else if(selectionType == SelectionType.TOURNAMENT){
-            //     selected.add(tournamentSelection(population));
-            // }
-            
-            // add children to new population
-            //newPopulation.addAll(children);
-
-            TravelChromosome chromosome = tournamentSelection(population);
-            if (!hashSet.contains(chromosome)) {
-                hashSet.add(chromosome);
-                selected.add(chromosome);
-            }
-
-            //selected.add(rouletteSelection(population));
-        }
-
-        return selected;
-    }
-    
-
-    // select the min chromosome from the random elements selected
-    public TravelChromosome tournamentSelection(List<TravelChromosome> population) {
-        List<TravelChromosome> selected = pickNRandomElements(population, tournamentSize);
-        return Collections.min(selected);
-    }
-
-
-    public TravelChromosome rouletteSelection(List<TravelChromosome> population){
-        int totalFitness = population.stream().map(TravelChromosome::getFitness).mapToInt(Integer::intValue).sum();
-        int selectedValue = Helper.random().nextInt(totalFitness);
-        float recValue = (float) 1/selectedValue;
-        float currentSum = 0;
-        for(TravelChromosome genome : population){
-            currentSum += (float) 1/genome.getFitness();
-            if(currentSum >= recValue){
-                return genome;
-            }
-        }
-        int selectRandom = Helper.random().nextInt(populationSize);
-        return population.get(selectRandom);
-    }
 
 
     ////////////////////////////////

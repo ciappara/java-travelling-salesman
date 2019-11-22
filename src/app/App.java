@@ -27,7 +27,7 @@ public class App {
         // store distinct coordinates only
 
         String algorithm = args.length > 0 ? args[0] : "GA";
-        String filename = args.length > 1 ? args[1] : "random-2019-11-22-10-42-39.txt";
+        String filename = args.length > 1 ? args[1] : "test1tsp.txt"; //"random-2019-11-22-10-42-39.txt";
 
         // load or generate cities
         App.cities = new CityPoints(surfaceWidth, surfaceHeight, randomPointsQty);

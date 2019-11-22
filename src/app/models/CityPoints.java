@@ -50,6 +50,7 @@ public class CityPoints {
 
         // reset cities array
         points = new ArrayList<>();
+        HashSet<String> hashSet = new HashSet<>();
 
         String[] lines = Helper.readFromFile(filename).split("\n");
         
@@ -60,7 +61,11 @@ public class CityPoints {
             int x = (int) Double.parseDouble(words[1]);
             int y = (int) Double.parseDouble(words[2]);
 
-            addCityPoints(x, y, id);
+            if (!hashSet.contains(x + "," + y))
+            {
+                hashSet.add(x + "," + y);
+                addCityPoints(x, y, id);
+            }
         }
     }
 
