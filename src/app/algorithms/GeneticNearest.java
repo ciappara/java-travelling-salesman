@@ -11,7 +11,7 @@ import app.models.*;
 import app.utils.Helper;
 import app.utils.Surface;
 
-public class GeneticAlgorithm {
+public class GeneticNearest {
 
     int populationSize; // generation size
     int crossoverRate;  // reproduction size
@@ -21,7 +21,7 @@ public class GeneticAlgorithm {
     int tournamentSize;
     CityPoints cities;
 
-    public GeneticAlgorithm(CityPoints cities, int maxIterations) { //int targetFitness
+    public GeneticNearest(CityPoints cities, int maxIterations) { //int targetFitness
         this.cities = cities;
         this.populationSize = 1000;
         this.crossoverRate = 120;
@@ -39,7 +39,8 @@ public class GeneticAlgorithm {
     ////////////////////////////////
     public TravelChromosome optimize(Surface surface) {
 
-        List<TravelChromosome> population = this.initialPopulation();
+        //List<TravelChromosome> population = this.initialPopulation();
+        List<TravelChromosome> population = this.initialPopulationFromNearestNeighbour();
         TravelChromosome minimumChromosome = population.get(0);
         TravelChromosome bestEverChromosome = population.get(0);
 
@@ -73,14 +74,18 @@ public class GeneticAlgorithm {
         return bestEverChromosome;
     }
 
-
-    // Create initial generation/population
-    public List<TravelChromosome> initialPopulation() {
+    // Create initial generation/population using NN algorithm
+    public List<TravelChromosome> initialPopulationFromNearestNeighbour() {
 
         int numberOfCities = cities.points.size();
         HashSet<Integer[]> hashSet = new HashSet<>(); // stores all chromosomes created and makes sure they are not the same
         List<TravelChromosome> population = new ArrayList<>();
+
+        // first add the nearest neighbour pop
+        NearestNeighbour nn = new NearestNeighbour();
+        population = nn.getNNPopulation(cities);
         
+        // then continue with normal population
         while (population.size() < populationSize) {
 
             // create new shuffled cities order
@@ -478,10 +483,6 @@ public class GeneticAlgorithm {
 
         // the crossover rate will be the new population size!!!
         // so this 
-
-
-        // SELECT TOP ROWS FIRST
-
 
         //for(int i=0; i < crossoverRate; i++){
         while(selected.size() < crossoverRate) {

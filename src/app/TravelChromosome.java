@@ -19,12 +19,12 @@ public class TravelChromosome implements Comparable<TravelChromosome> {
 
     // Generate random travel path
     public TravelChromosome(int numberOfCities) {
-        this.orderChromosome = this.shuffleCityOrder(numberOfCities);
+        this.orderChromosome = shuffleCityOrder(numberOfCities);
     }
 
     // Generate random travel path
     public TravelChromosome(ArrayList<City> cityPoints) {
-        this.orderChromosome = this.shuffleCityOrder(cityPoints.size());
+        this.orderChromosome = shuffleCityOrder(cityPoints.size());
         //this.resetStartingCity();
         this.calculateFitness(cityPoints);
     }
@@ -109,6 +109,10 @@ public class TravelChromosome implements Comparable<TravelChromosome> {
         return this.fitness;
     }
 
+    public double getDistance() {
+        return this.totalDistance;
+    }
+
     ////////////////
     // OVERRIDES
     ////////////////
@@ -124,8 +128,8 @@ public class TravelChromosome implements Comparable<TravelChromosome> {
             sb.append(gene);
         }
 
-        sb.append(" // Distance: ");
-        sb.append(this.totalDistance);
+        // sb.append(" // Distance: ");
+        // sb.append(this.totalDistance);
         return sb.toString();
     }
 

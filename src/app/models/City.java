@@ -17,4 +17,18 @@ public class City {
     public double calculateDistance(City nextCity) {
         return Point2D.distance(this.x, this.y, nextCity.x, nextCity.y);
     }
+
+    // @Override
+    // public int compareTo(City city) {
+
+    //     if(this.x > city.x) {
+    //         return 1;
+    //     }
+    //     else if(this.x < city.x) {
+    //         return -1;
+    //     }
+    //     else {
+    //         return 0;
+    //     }
+    // }
 }

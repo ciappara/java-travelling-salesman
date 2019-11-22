@@ -3,6 +3,7 @@ import app.TravelChromosome;
 import app.models.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class NearestNeighbour {
 
@@ -103,6 +104,17 @@ public class NearestNeighbour {
         TravelChromosome nearestChromosome = new TravelChromosome(cities.points, shortestChromosome);
         return nearestChromosome;
     }
+
+
+    public List<TravelChromosome> getNNPopulation(CityPoints cities) {
+        List<TravelChromosome> nnPopulaton = new ArrayList<>();
+        for(int i = 0; i < cities.points.size(); i++) {
+            TravelChromosome chromosome = optimize(cities, i);
+            nnPopulaton.add(chromosome);
+        }
+        return nnPopulaton;
+    }
+
 
     // private Tour tour;
     // private double[][] adjacencyMatrix;
