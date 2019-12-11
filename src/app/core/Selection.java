@@ -1,5 +1,5 @@
 package app.core;
-import app.TravelChromosome;
+import app.models.TravelChromosome;
 import app.utils.Helper;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +20,9 @@ public class Selection {
 
 
         // SELECT TOP ROWS FIRST
+        TravelChromosome minimum = Collections.min(population);
+        hashSet.add(minimum);
+        selected.add(minimum);
 
 
         //for(int i=0; i < crossoverRate; i++){

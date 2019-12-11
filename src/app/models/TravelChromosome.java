@@ -1,8 +1,7 @@
-package app;
+package app.models;
+import app.utils.Helper;
 import java.util.Arrays;
 import java.util.ArrayList;
-import app.models.*;
-import app.utils.Helper;
 
 // notes:
 // starting city will always be the first one

@@ -1,33 +1,33 @@
 package app;
-import java.util.*;
 import app.algorithms.GeneticAlgorithm;
+import app.algorithms.GeneticNearest;
 import app.algorithms.NearestNeighbour;
 import app.models.*;
 import app.utils.*;
+import java.util.*;
 
 public class App {
 
     // parameter values
     private static int surfaceWidth = 800;
     private static int surfaceHeight = 800;
-    private static int randomPointsQty = 200;
-    private static int maxIterations = 2000;
+    private static int randomPointsQty = 700;
+    private static int maxIterations = 7000;
 
     // global variables
     private static CityPoints cities;
     private static Surface surface;
-    private static boolean isTest = true;
+    private static boolean isTest = false;
     private static TravelChromosome bestChromosone;
     private static long elapsedTime;
     
     public static void main(String[] args) throws Exception {
 
         // IMPORTANT!!
-        // add timer
         // store distinct coordinates only
 
         String algorithm = args.length > 0 ? args[0] : "GA";
-        String filename = args.length > 1 ? args[1] : "test1tsp.txt"; //"random-2019-11-22-10-42-39.txt";
+        String filename = args.length > 1 ? args[1] : "test1tsp.txt"; // "finaltest2018.txt"; //"random-2019-11-22-10-42-39.txt";
 
         // load or generate cities
         App.cities = new CityPoints(surfaceWidth, surfaceHeight, randomPointsQty);
@@ -39,7 +39,7 @@ public class App {
         }
 
         
-        if(algorithm == "GA") {
+        if(algorithm.equals("GA")) {
             // create population using a genetic algorithm
             GeneticAlgorithm population = new GeneticAlgorithm(App.cities, App.maxIterations);
 
@@ -47,7 +47,15 @@ public class App {
             bestChromosone = population.optimize(surface);
             elapsedTime = System.nanoTime() - elapsedTime;
         }
-        else if(algorithm == "NN") {
+        else if(algorithm.equals("GN")) {
+            // create population using a genetic algorithm
+            GeneticNearest population = new GeneticNearest(App.cities, App.maxIterations);
+
+            elapsedTime = System.nanoTime();
+            bestChromosone = population.optimize(surface);
+            elapsedTime = System.nanoTime() - elapsedTime;
+        }
+        else if(algorithm.equals("NN")) {
             // specify that a heuristic approach was used on the nearest neighbour
             NearestNeighbour population = new NearestNeighbour();
             
@@ -56,10 +64,10 @@ public class App {
             elapsedTime = System.nanoTime() - elapsedTime;
         }
         
-        //if(!isTest) {
+        // create surface and visualise result if not in test mode
+        if(!isTest) {
             visualiseResult(bestChromosone);
-        //}
-        //System.out.println(bestChromosone);
+        }
     }
 
     ////////////////////////////////
@@ -75,7 +83,7 @@ public class App {
     ////////////////////////////////
     public static void visualiseResult(TravelChromosome chromosome) {
 
-        System.out.println("------------------------------");
+        System.out.println("\n------------------------------");
         
         // print time
         double seconds = (double)elapsedTime / 1_000_000_000.0;
@@ -87,14 +95,15 @@ public class App {
         // print path
         System.out.println(chromosome.toString());
 
-        System.out.println("------------------------------");
+        System.out.println("------------------------------\n");
 
+        // create surface if not available
         if(App.surface == null) {
             visualise();
         }
 
-        // todo: fix update to allow only for one value
+        // get path from chromosome and update surface
         ArrayList<City> bestEverPath = cities.getPathFromChromosome(chromosome);
-        surface.update(bestEverPath, bestEverPath);
+        App.surface.update(bestEverPath);
     }
 }

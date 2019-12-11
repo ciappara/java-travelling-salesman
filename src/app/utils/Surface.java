@@ -1,8 +1,8 @@
 package app.utils;
+import app.models.*;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
-import app.models.*;
 
 // create canvas to visualise all cities and connections between them
 public class Surface {
@@ -32,6 +32,11 @@ public class Surface {
 
     public void update(ArrayList<City> minimumPath, ArrayList<City> bestEverPath) {
         panel.update(minimumPath, bestEverPath);
+        SwingUtilities.updateComponentTreeUI(panel);
+    }
+
+    public void update(ArrayList<City> bestEverPath) {
+        panel.update(bestEverPath, bestEverPath);
         SwingUtilities.updateComponentTreeUI(panel);
     }
 }

@@ -1,6 +1,6 @@
 package app.core;
-import app.TravelChromosome;
 import app.models.City;
+import app.models.TravelChromosome;
 import app.utils.Helper;
 import java.util.Arrays;
 import java.util.ArrayList;

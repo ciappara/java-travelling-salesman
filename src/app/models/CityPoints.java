@@ -1,7 +1,6 @@
 package app.models;
-import java.util.*;
-import app.TravelChromosome;
 import app.utils.Helper;
+import java.util.*;
 
 public class CityPoints {
 
@@ -55,17 +54,20 @@ public class CityPoints {
         String[] lines = Helper.readFromFile(filename).split("\n");
         
         for(String line : lines) {
-            String[] words = line.trim().replaceAll("\\s{2,}", " ").split(" ");
+            String[] words = line.trim().replaceAll("\t", " ").replaceAll("\\s{2,}", " ").split(" ");
 
-            int id = (int) Double.parseDouble(words[0]);
-            int x = (int) Double.parseDouble(words[1]);
-            int y = (int) Double.parseDouble(words[2]);
-
-            if (!hashSet.contains(x + "," + y))
-            {
-                hashSet.add(x + "," + y);
-                addCityPoints(x, y, id);
+            try {
+                int id = (int) Double.parseDouble(words[0]);
+                int x = (int) Double.parseDouble(words[1]);
+                int y = (int) Double.parseDouble(words[2]);
+    
+                if (!hashSet.contains(x + "," + y))
+                {
+                    hashSet.add(x + "," + y);
+                    addCityPoints(x, y, id);
+                }
             }
+            catch(Exception ex) {}
         }
     }
 

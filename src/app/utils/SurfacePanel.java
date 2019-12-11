@@ -1,10 +1,9 @@
 package app.utils;
+import app.models.*;
+import app.utils.Helper;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-import app.TravelChromosome;
-import app.models.*;
-import app.utils.Helper;
 
 // SurfacePanel is used to draw the points and shortest path on the GUI
 public class SurfacePanel extends JPanel{

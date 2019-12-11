@@ -1,16 +1,14 @@
 package app.algorithms;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import app.*;
 import app.core.Crossover;
 import app.core.Mutation;
 import app.core.Selection;
 import app.models.*;
 import app.utils.Helper;
 import app.utils.Surface;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 public class GeneticNearest {
 

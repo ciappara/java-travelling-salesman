@@ -1,5 +1,4 @@
 package app.algorithms;
-import app.TravelChromosome;
 import app.models.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +17,10 @@ public class NearestNeighbour {
 
             if(bestEverChromosome == null || chromosome.getFitness() < bestEverChromosome.getFitness()) {
                 bestEverChromosome = chromosome;
-                System.out.println("." + Arrays.toString(bestEverChromosome.getOrderChromosome()));
+                //System.out.println("." + Arrays.toString(bestEverChromosome.getOrderChromosome()));
             }
             else {
-                System.out.println(" " + Arrays.toString(chromosome.getOrderChromosome()));
+                //System.out.println(" " + Arrays.toString(chromosome.getOrderChromosome()));
             }
         }
 
