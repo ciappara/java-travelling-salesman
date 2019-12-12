@@ -11,12 +11,12 @@ public class Surface {
     SurfacePanel panel;
     CityPoints cities;
 
-    public Surface(CityPoints cities, int width, int height) {
+    public Surface(CityPoints cities, int width, int height, String title) {
 
         this.cities = cities;
 
         // create canvas to visualise all the points on your line
-		frame = new JFrame("TSP: Genetic Algorithm");
+		frame = new JFrame("TSP: " + title);
         frame.setSize(width + 70, height + 70);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // stop app on closing frame
         frame.setBackground(Color.RED);

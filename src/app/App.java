@@ -9,8 +9,8 @@ import java.util.*;
 public class App {
 
     // parameter values
-    private static int surfaceWidth = 800;
-    private static int surfaceHeight = 800;
+    private static int surfaceWidth = 1000;
+    private static int surfaceHeight = 1000;
     private static int randomPointsQty = 700;
     private static int maxIterations = 7000;
 
@@ -20,14 +20,14 @@ public class App {
     private static boolean isTest = false;
     private static TravelChromosome bestChromosone;
     private static long elapsedTime;
+    private static String surfaceTitle;
     
     public static void main(String[] args) throws Exception {
 
-        // IMPORTANT!!
-        // store distinct coordinates only
-
+        // get arguments and create title
         String algorithm = args.length > 0 ? args[0] : "GA";
         String filename = args.length > 1 ? args[1] : "test1tsp.txt"; // "finaltest2018.txt"; //"random-2019-11-22-10-42-39.txt";
+        setSurfaceTitle(algorithm, filename);
 
         // load or generate cities
         App.cities = new CityPoints(surfaceWidth, surfaceHeight, randomPointsQty);
@@ -38,14 +38,14 @@ public class App {
             visualise();
         }
 
-        
+        // run chosen algorithm
         if(algorithm.equals("GA")) {
             // create population using a genetic algorithm
             GeneticAlgorithm population = new GeneticAlgorithm(App.cities, App.maxIterations);
 
             elapsedTime = System.nanoTime();
             bestChromosone = population.optimize(surface);
-            elapsedTime = System.nanoTime() - elapsedTime;
+            elapsedTime = (System.nanoTime() - elapsedTime);
         }
         else if(algorithm.equals("GN")) {
             // create population using a genetic algorithm
@@ -53,7 +53,7 @@ public class App {
 
             elapsedTime = System.nanoTime();
             bestChromosone = population.optimize(surface);
-            elapsedTime = System.nanoTime() - elapsedTime;
+            elapsedTime = (System.nanoTime() - elapsedTime);
         }
         else if(algorithm.equals("NN")) {
             // specify that a heuristic approach was used on the nearest neighbour
@@ -61,21 +61,19 @@ public class App {
             
             elapsedTime = System.nanoTime();
             bestChromosone = population.optimize(App.cities);
-            elapsedTime = System.nanoTime() - elapsedTime;
+            elapsedTime = (System.nanoTime() - elapsedTime);
         }
         
         // create surface and visualise result if not in test mode
-        if(!isTest) {
-            visualiseResult(bestChromosone);
-        }
+        visualiseResult(bestChromosone);
     }
 
     ////////////////////////////////
     // create panel to visualise
     // city points & best ever path
     ////////////////////////////////
-    public static void visualise() {
-        App.surface = new Surface(App.cities, App.surfaceWidth, App.surfaceHeight);
+    private static void visualise() {
+        App.surface = new Surface(App.cities, App.surfaceWidth, App.surfaceHeight, surfaceTitle);
     }
 
     ////////////////////////////////
@@ -83,7 +81,8 @@ public class App {
     ////////////////////////////////
     public static void visualiseResult(TravelChromosome chromosome) {
 
-        System.out.println("\n------------------------------");
+        System.out.println("\n" + surfaceTitle);
+        System.out.println("--------------------------------------");
         
         // print time
         double seconds = (double)elapsedTime / 1_000_000_000.0;
@@ -94,8 +93,7 @@ public class App {
 
         // print path
         System.out.println(chromosome.toString());
-
-        System.out.println("------------------------------\n");
+        System.out.println("--------------------------------------\n");
 
         // create surface if not available
         if(App.surface == null) {
@@ -105,5 +103,26 @@ public class App {
         // get path from chromosome and update surface
         ArrayList<City> bestEverPath = cities.getPathFromChromosome(chromosome);
         App.surface.update(bestEverPath);
+    }
+
+    ////////////////////////////////
+    // specify visualization title
+    ////////////////////////////////
+    public static void setSurfaceTitle(String algorithm, String filename) {
+        surfaceTitle = "";
+
+        switch(algorithm) {
+            case "GA":
+                surfaceTitle = "Genetic Algorithm";
+                break;
+            case "NN":
+                surfaceTitle = "Nearest Neighbour";
+                break;
+            case "GN":
+                surfaceTitle = "Genetic Neighbour";
+                break;
+        }
+
+        surfaceTitle += " - " + filename;
     }
 }

@@ -151,12 +151,6 @@ public class Helper {
             FileWriter fw = new FileWriter(getFilesPath() + "random-" + formatter.format(date) + ".txt");
             fw.write(text);
             fw.close();
-
-            // Date date = new Date();
-            // SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            // System.out.println(formatter.format(date))
-            // fw.write(text + " - " + formatter.format(date));
-            // fw.close();
         }
         catch(IOException ioex) {
             System.out.println(ioex.getMessage());

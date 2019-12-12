@@ -15,48 +15,39 @@ public class Selection {
         List<TravelChromosome> selected = new ArrayList<>();
         HashSet<TravelChromosome> hashSet = new HashSet<>();
 
-        // the crossover rate will be the new population size!!!
-        // so this 
-
-
-        // SELECT TOP ROWS FIRST
+        // add top row/s first
         TravelChromosome minimum = Collections.min(population);
         hashSet.add(minimum);
         selected.add(minimum);
 
-
-        //for(int i=0; i < crossoverRate; i++){
+        // use tournament or roulette crossover
         while(selected.size() < crossoverRate) {
-            // if(selectionType == SelectionType.ROULETTE){
-            //     selected.add(rouletteSelection(population));
-            // }
-            // else if(selectionType == SelectionType.TOURNAMENT){
-            //     selected.add(tournamentSelection(population));
-            // }
-            
-            // add children to new population
-            //newPopulation.addAll(children);
 
+            //TravelChromosome chromosome = rouletteSelection(population, tournamentSize);
             TravelChromosome chromosome = tournamentSelection(population, tournamentSize);
             if (!hashSet.contains(chromosome)) {
                 hashSet.add(chromosome);
                 selected.add(chromosome);
             }
-
-            //selected.add(rouletteSelection(population));
         }
 
         return selected;
     }
     
 
-    // select the min chromosome from the random elements selected
+    ////////////////////////////////
+    // select min chromosome from
+    // the random elements selected
+    ////////////////////////////////
     public static TravelChromosome tournamentSelection(List<TravelChromosome> population, int tournamentSize) {
         List<TravelChromosome> selected = pickNRandomElements(population, tournamentSize);
         return Collections.min(selected);
     }
+    
 
-
+    ////////////////////////////////
+    // select random elements
+    ////////////////////////////////
     public static TravelChromosome rouletteSelection(List<TravelChromosome> population, int populationSize){
         int totalFitness = population.stream().map(TravelChromosome::getFitness).mapToInt(Integer::intValue).sum();
         int selectedValue = Helper.random().nextInt(totalFitness);
