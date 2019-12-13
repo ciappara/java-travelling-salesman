@@ -71,6 +71,9 @@ public class NearestNeighbour {
             current = cities.points.get(shortestCityPosition);
         }
         
+        // fix to close the circuit
+        chromosome.add(startingCity);
+        
         Integer[] shortestChromosome = new Integer[chromosome.size()];
         for(int i = 0; i < chromosome.size(); i++) {
             shortestChromosome[i] = chromosome.get(i);

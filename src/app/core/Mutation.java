@@ -25,11 +25,14 @@ public class Mutation {
             float mutate = Helper.random().nextFloat();
             if(mutate < mutationRate) {
     
-                int from = Helper.random().nextInt(orderChromosome.length);
-                int to   = Helper.random().nextInt(orderChromosome.length);
+                int from = Helper.random().nextInt(orderChromosome.length - 1);
+                int to   = Helper.random().nextInt(orderChromosome.length - 1);
                 Helper.swap(orderChromosome, from, to);
             }
         }
+
+        // fix to close the circuit
+        orderChromosome[orderChromosome.length - 1] = orderChromosome[0];
 
         // return same travel path if not mutated
         return orderChromosome;

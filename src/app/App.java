@@ -22,6 +22,9 @@ public class App {
     private static long elapsedTime;
     private static String surfaceTitle;
     
+    // settings
+    private static boolean enableVisualisation = false;
+    
     public static void main(String[] args) throws Exception {
 
         // get arguments and create title
@@ -94,6 +97,8 @@ public class App {
         // print path
         System.out.println(chromosome.toString());
         System.out.println("--------------------------------------\n");
+
+        if(!enableVisualisation) { return; }
 
         // create surface if not available
         if(App.surface == null) {

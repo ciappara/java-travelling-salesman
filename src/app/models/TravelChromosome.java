@@ -41,7 +41,7 @@ public class TravelChromosome implements Comparable<TravelChromosome> {
 
     // PRV: Generate random chromosome using number of cities and shuffle
     public static Integer[] shuffleCityOrder(int numberOfCities) {
-        Integer[] chromosome = new Integer[numberOfCities];
+        Integer[] chromosome = new Integer[numberOfCities + 1];
         return shuffleCityOrder(chromosome);
     }
 
@@ -55,12 +55,15 @@ public class TravelChromosome implements Comparable<TravelChromosome> {
             }
         }
 
-        for(int i = 0; i < chromosome.length; i++) {
-            int j = Helper.random().nextInt(chromosome.length);
+        for(int i = 0; i < chromosome.length - 1; i++) {
+            int j = Helper.random().nextInt(chromosome.length - 1);
             if(i != j) {
                 Helper.swap(chromosome, i, j);
             }
         }
+
+        // fix to close the circuit
+        chromosome[chromosome.length - 1] = chromosome[0];
 
         return chromosome;
     }
@@ -76,7 +79,7 @@ public class TravelChromosome implements Comparable<TravelChromosome> {
 
     // PRV: Calculate distance between two points
     private void calculateFitness(ArrayList<City> cities) {
-        int numberOfCities = cities.size();
+        int numberOfCities = orderChromosome.length;
         double totalDistance = 0.0;
 
         for(int i = 0; i < numberOfCities - 1; i++) {

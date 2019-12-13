@@ -32,7 +32,7 @@ public class Crossover {
         Integer[] child2Chromosome = Helper.clone(parent2Chromosome);
 
         // find midpoint which should always skip the first gene
-        int parentLength = parent1Chromosome.length;
+        int parentLength = parent1Chromosome.length - 1;
         int firstPoint = Helper.random().nextInt(parentLength);
         int secondPoint = Helper.random().nextInt(parentLength - firstPoint) + firstPoint;
 
@@ -40,6 +40,10 @@ public class Crossover {
         doCrossover(child1Chromosome, parent2Chromosome, firstPoint, secondPoint);
         doCrossover(child2Chromosome, parent1Chromosome, secondPoint, parentLength);
 
+        // fix to close the circuit
+        child1Chromosome[parent1Chromosome.length - 1] = child1Chromosome[0];
+        child2Chromosome[parent1Chromosome.length - 1] = child2Chromosome[0];
+        
         Integer[][] children = new Integer[][] { child1Chromosome, child2Chromosome };
         return children;
     }
@@ -70,8 +74,8 @@ public class Crossover {
     // Crossover class testing
     public static void main(String[] args) {
 
-        Integer[] parent1Chromosome = new Integer[] { 1, 8, 2, 7, 3, 6, 4, 5, 0};
-        Integer[] parent2Chromosome = new Integer[] { 2, 4, 6, 8, 0, 1, 3, 5, 7};
+        Integer[] parent1Chromosome = new Integer[] { 1, 8, 2, 7, 3, 6, 4, 5, 0, 1};
+        Integer[] parent2Chromosome = new Integer[] { 2, 4, 6, 8, 0, 1, 3, 5, 7, 2};
 
         Integer[][] children = twoPointCross(parent1Chromosome, parent2Chromosome);
         for(Integer[] child : children) {
